@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Engavetados - Caso 3</title>
+<style>
+@font-face{font-family:Anton;src:url(anton.woff2) format("woff2")}
+@font-face{font-family:Marker;src:url(marker.woff2) format("woff2")}
+:root{--bg:#1E2633;--panel:#2A3446;--y:#ECC94B;--r:#E53E3E;--paper:#F3E9C6;--ink:#12161E;--tx:#F5F1E6;--mu:#8A94A6;--g:#7BC47F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:720px;height:1280px;background:#0c0f15;overflow:hidden}
+#stage{position:relative;width:720px;height:1280px;overflow:hidden;background:var(--bg);font-family:Anton,Impact,sans-serif;color:var(--tx);text-transform:uppercase}
+.sc{position:absolute;inset:0;opacity:0}
+.abs{position:absolute;transform-origin:center center}
+.t{position:absolute;left:0;width:720px;text-align:center;line-height:1}
+.ls{letter-spacing:.06em}
+.card{position:absolute;background:var(--panel);border:3px solid #3a465c;border-radius:18px}
+.paper{position:absolute;background:var(--paper);color:var(--ink);border-radius:6px;box-shadow:0 10px 30px #0008}
+.mk{font-family:Marker,cursive;text-transform:none}
+#hud{position:absolute;left:0;top:0;width:720px;height:96px;z-index:30;background:linear-gradient(#0c0f15f0,#0c0f1500)}
+#cap{position:absolute;left:30px;width:660px;top:902px;height:130px;z-index:30;text-align:center;font-size:62px;line-height:1.08;letter-spacing:.03em;-webkit-text-stroke:0;text-shadow:0 4px 0 #000,0 0 14px #000c,3px 3px 0 #000,-3px 3px 0 #000}
+#cap span{display:inline-block;margin:0 9px;color:#fff;transition:none}
+#cap span.on{color:var(--y);transform:scale(1.07)}
+#noise{position:absolute;inset:0;z-index:40;opacity:.07;pointer-events:none;mix-blend-mode:overlay}
+#vig{position:absolute;inset:0;z-index:41;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,#000a 100%)}
+#cover{position:absolute;inset:0;z-index:60;background:var(--bg)}
+#endc{position:absolute;inset:0;z-index:50;background:var(--bg);opacity:0}
+</style></head><body>
+<div id="stage">
+<div id="scenes"></div>
+<div id="hud">
+  <div class="abs" style="left:28px;top:26px;display:flex;align-items:center;gap:12px">
+    <svg width="34" height="28" viewBox="0 0 34 28"><path d="M0 4h12l3 4h19v20H0z" fill="#ECC94B"/><path d="M0 10h34v18H0z" fill="#F2D567"/></svg>
+    <div style="font-size:30px;letter-spacing:.1em">ENGAVETADOS</div></div>
+  <div class="abs" style="right:28px;top:26px;font-size:30px;letter-spacing:.1em;color:var(--y)">CASO #3</div>
+  <div id="prog" class="abs" style="left:0;top:90px;height:5px;width:0;background:var(--y)"></div>
+</div>
+<div id="cap"></div>
+<div id="endc"></div>
+<svg id="noise" width="720" height="1280"><filter id="nf"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#nf)"/></svg>
+<div id="vig"></div><div id="mk0" style="position:absolute;left:0;bottom:0;width:720px;height:40px;background:#ff00ff;z-index:99;display:none"></div>
+<div id="cover">
+  <div class="abs" style="left:60px;top:150px;width:600px;height:900px">
+    <svg width="600" height="900" viewBox="0 0 600 900">
+      <path d="M0 40 Q0 0 40 0 H220 Q250 0 265 30 L285 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#D9B53A"/>
+      <path d="M0 110 Q0 70 40 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#ECC94B"/>
+      <rect x="40" y="130" width="520" height="10" fill="#C99F25"/>
+    </svg>
+    <div class="t" style="left:0;width:600px;top:175px;font-size:44px;letter-spacing:.2em;color:#12161E">CASO #3</div>
+    <div class="t" style="left:0;width:600px;top:250px;font-size:138px;line-height:.98;color:#12161E">DANIELLA<br>PEREZ</div>
+    <div class="t" style="left:0;width:600px;top:560px;font-size:44px;letter-spacing:.14em;color:#12161E">BRASIL · 1992</div>
+    <div class="abs" style="left:70px;top:680px;width:460px;padding:6px 0;border:9px solid #E53E3E;border-radius:10px;text-align:center;font-size:62px;white-space:nowrap;color:#E53E3E;transform:rotate(-7deg);letter-spacing:.05em">UMA MÃE LUTOU</div>
+    <div class="t" style="left:0;width:600px;top:862px;font-size:24px;letter-spacing:.28em;color:#12161EAA">ENGAVETADOS | CASOS REAIS</div>
+  </div>
+</div>
+</div>
+<script src="timing.js"></script>
+<script>
+const LEAD=0.6, TOTAL=TM.dur+LEAD, END=TOTAL+2.6;
+const W=TM.words, BS=[]; W.forEach(w=>(BS[w.s]=BS[w.s]||[]).push(w));
+const wt=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t0+LEAD;
+const we=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t1+LEAD;
+const ss=j=>TM.sents[j].t0+LEAD, se=j=>TM.sents[j].t1+LEAD;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), pr=(t,a,b)=>cl((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eb=x=>{const c=1.70158,d=c+1;return 1+d*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const $=(id)=>document.getElementById(id);
+function pop(el,t,a,d=.38){const p=pr(t,a,a+d);el.style.opacity=p>0?Math.min(1,p*3):0;el.style.transform=(el.dataset.b||'')+` scale(${p>0?Math.max(0,eb(p)):0})`}
+function fade(el,t,a,b,d=.3){el.style.opacity=Math.min(pr(t,a,a+d),1-pr(t,b-d,b))}
+function slide(el,t,a,dx,dy,d=.5){const p=eo(pr(t,a,a+d));el.style.opacity=Math.min(1,p*3);el.style.transform=(el.dataset.b||'')+` translate(${dx*(1-p)}px,${dy*(1-p)}px)`}
+const fmt=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const scenes=[];
+function scene(a,b,html,upd){const d=document.createElement('div');d.className='sc';d.innerHTML=html;$('scenes').appendChild(d);
+  const q=id=>d.querySelector('#'+id);scenes.push({a,b,d,upd:upd(q,d)});}
+const plane=(w,c='#0A0D13')=>`<svg width="${w}" viewBox="0 0 200 64"><g fill="${c}"><path d="M10 32Q10 25 30 25H150Q185 27 196 32Q185 37 150 39H30Q10 39 10 32Z"/><path d="M18 27L6 4H32L46 25Z"/><path d="M84 36L112 60H130L116 36Z"/><path d="M88 26L112 4H126L110 26Z"/><rect x="26" y="30" width="22" height="7" rx="3"/></g><g fill="#ECC94B" opacity=".9">${[...Array(12)].map((_,i)=>`<circle cx="${60+i*9}" cy="29" r="1.8"/>`).join('')}</g></svg>`;
+const para=(w,c='#F5F1E6')=>`<svg width="${w}" viewBox="0 0 90 100"><path d="M5 45A40 40 0 0 1 85 45Q65 35 45 45Q25 35 5 45Z" fill="${c}"/><path d="M5 45L40 88M85 45L50 88M45 45L45 88" stroke="${c}" stroke-width="2" fill="none"/><rect x="36" y="86" width="18" height="12" rx="3" fill="${c}"/></svg>`;
+const person=(w,c)=>`<svg width="${w}" viewBox="0 0 30 40"><circle cx="15" cy="9" r="7" fill="${c}"/><path d="M3 38Q3 18 15 18Q27 18 27 38Z" fill="${c}"/></svg>`;
+const bill=(w,h=w*.5)=>`<div style="width:${w}px;height:${h}px;background:#7BC47F;border:3px solid #2E6B3A;border-radius:6px;position:relative;box-shadow:0 4px 0 #2E6B3A"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:${h*.55}px;height:${h*.55}px;border-radius:50%;border:3px solid #2E6B3A;background:#9AD6A0"></div></div>`;
+const stamp=(txt,col,fs,extra='')=>`<div class="abs" style="padding:4px 22px;border:9px solid ${col};border-radius:10px;color:${col};font-size:${fs}px;letter-spacing:.06em;white-space:nowrap;${extra}">${txt}</div>`;
+
+/* ---------- A: 22 anos ---------- */
+scene(0,se(1),`
+<div class="abs" style="left:0;top:0;width:720px;height:1280px;background:linear-gradient(#0A0E18,#1B2335)"></div>
+<div class="abs" style="left:0;top:96px;width:720px;height:700px;clip-path:polygon(50% 0,18% 100%,82% 100%);background:linear-gradient(#ECC94B44,#ECC94B05)"></div>
+<div class="abs" style="left:170px;top:760px;width:380px;height:44px;border-radius:50%;background:radial-gradient(#ECC94B88,transparent 70%)"></div>
+<div id="n22" class="t" style="top:130px;font-size:310px;color:var(--y);text-shadow:0 8px 0 #000">0</div>
+<div id="an" class="t" style="top:450px;font-size:66px;letter-spacing:.3em;color:var(--tx)">ANOS</div>
+<div id="pp" class="abs" style="left:285px;top:560px">${person(150,'#F5F1E6')}</div>
+<div id="at" class="t" style="top:795px;font-size:54px;letter-spacing:.1em">ATRIZ DE NOVELA</div>
+<div id="au" class="t" style="top:855px;font-size:54px;letter-spacing:.1em;color:var(--y)">NO AUGE ▲</div>`,
+(q)=>{const n=q('n22'),an=q('an'),at=q('at'),au=q('au'),pp=q('pp');
+ return t=>{const c=eo(pr(t,1.55,2.5));n.textContent=Math.round(22*c);pop(an,t,2.4,.3);
+  pop(at,t,wt(1,1),.35);pop(au,t,wt(1,6),.35);pp.style.transform=`translateY(${Math.sin(t*1.4)*3}px)`}});
+
+/* ---------- B: 28 de dezembro de 1992 ---------- */
+scene(se(1),se(2),`
+<div id="cal" class="paper" style="left:110px;top:190px;width:500px;height:640px;border-radius:16px">
+ <div style="height:110px;background:#E53E3E;border-radius:16px 16px 0 0;text-align:center;line-height:116px;font-size:70px;color:#fff;letter-spacing:.12em">DEZEMBRO</div>
+ <div id="d28" class="t" style="left:0;width:500px;top:125px;font-size:340px;color:var(--ink)">28</div>
+ <div id="y92" class="t" style="left:0;width:500px;top:500px;font-size:112px;color:var(--ink);letter-spacing:.06em">1992</div>
+</div>`,
+(q)=>{const cal=q('cal'),d=q('d28'),y=q('y92');cal.dataset.b='';
+ return t=>{slide(cal,t,ss(2),0,-420,.55);pop(d,t,wt(2,0),.35);pop(y,t,wt(2,6),.4);cal.style.transform+=` rotate(${(1-eo(pr(t,ss(2),ss(2)+.6)))*-5}deg)`}});
+
+/* ---------- C: a novela ---------- */
+scene(se(2),se(5),`
+<div id="tv" class="abs" style="left:60px;top:160px;width:600px;height:480px">
+ <svg class="abs" style="left:0;top:0" width="600" height="480" viewBox="0 0 600 480"><path d="M210 60L300 0M390 60L300 0" stroke="#8A94A6" stroke-width="6" fill="none"/><rect x="0" y="60" width="600" height="420" rx="46" fill="#3A4560"/><rect x="34" y="94" width="532" height="352" rx="30" fill="#0c0f15"/></svg>
+ <div class="abs" style="left:34px;top:94px;width:532px;height:352px;border-radius:30px;background:repeating-linear-gradient(#ffffff0a 0 3px,transparent 3px 6px),radial-gradient(#2a3a5c,#0c0f15 80%)"></div>
+ <div class="t" style="left:34px;width:532px;top:170px;font-size:82px;line-height:1.02;color:var(--y);text-shadow:0 5px 0 #000">DE CORPO<br>E ALMA</div>
+ <div class="t" style="left:34px;width:532px;top:370px;font-size:34px;letter-spacing:.3em;color:var(--mu)">NOVELA · 1992</div></div>
+<div id="ys" class="paper" style="left:130px;top:680px;width:460px;height:170px"><div class="t" style="left:0;width:460px;top:22px;font-size:34px;letter-spacing:.3em;color:#5a5f6c">PERSONAGEM</div><div class="t" style="left:0;width:460px;top:68px;font-size:96px;color:var(--ink)">YASMIN</div></div>
+<div id="aut" class="paper" style="left:90px;top:230px;width:540px;height:560px"><div class="t" style="left:0;width:540px;top:40px;font-size:40px;letter-spacing:.3em;color:#5a5f6c">ESCRITA POR</div><div class="t" style="left:0;width:540px;top:120px;font-size:130px;line-height:1.02;color:var(--ink)">GLÓRIA<br>PEREZ</div><div id="mae" class="t" style="left:0;width:540px;top:420px;font-size:78px;color:#E53E3E">A MÃE DELA</div></div>`,
+(q)=>{const tv=q('tv'),ys=q('ys'),au=q('aut'),mae=q('mae');tv.dataset.b='';ys.dataset.b='';au.dataset.b='';
+ return t=>{const out=1-pr(t,ss(5)-.05,ss(5)+.25);pop(tv,t,se(2)+.05,.45);tv.style.opacity=(+tv.style.opacity)*out;
+  pop(ys,t,wt(4,3)-.1,.35);ys.style.opacity=(+ys.style.opacity)*out;
+  pop(au,t,ss(5)+.15,.4);pop(mae,t,wt(5,5),.35)}});
+
+/* ---------- D: a noite / o local ---------- */
+scene(se(5),se(8),`
+<div class="abs" style="left:0;top:0;width:720px;height:1280px;background:linear-gradient(#070A12,#151C2C)"></div>
+<div class="abs" style="left:70px;top:120px;width:90px;height:90px;border-radius:50%;background:#F5F1E6;box-shadow:0 0 50px #F5F1E644"></div>
+<div id="hs" class="abs" style="left:140px;top:360px"><svg width="440" height="360" viewBox="0 0 440 360"><polygon points="0,130 220,0 440,130" fill="#2A3446"/><rect x="30" y="130" width="380" height="220" fill="#3A4560"/><rect x="180" y="220" width="80" height="130" fill="#1b2231"/><rect x="60" y="170" width="90" height="80" fill="#1b2231"/><rect id="wn" x="60" y="170" width="90" height="80" fill="#ECC94B"/><rect x="290" y="170" width="90" height="80" fill="#1b2231"/><rect x="0" y="350" width="440" height="10" fill="#10151f"/></svg></div>
+<div id="nt" class="t" style="top:250px;font-size:60px;letter-spacing:.2em;color:var(--mu)">NAQUELA NOITE</div>
+<div id="map" class="abs" style="left:0;top:0;width:720px;height:900px;opacity:0;background:repeating-linear-gradient(90deg,#ffffff10 0 2px,transparent 2px 90px),repeating-linear-gradient(#ffffff10 0 2px,transparent 2px 90px)"></div>
+<div id="pin" class="abs" style="left:290px;top:400px;opacity:0"><svg width="140" height="200" viewBox="0 0 140 200"><path d="M70 196C70 196 8 120 8 70A62 62 0 0 1 132 70C132 120 70 196 70 196Z" fill="#E53E3E" stroke="#12161E" stroke-width="6"/><circle cx="70" cy="70" r="24" fill="#12161E"/></svg></div>
+<div id="lc" class="t" style="top:190px;font-size:88px;line-height:1.04;color:var(--y);text-shadow:0 5px 0 #000;opacity:0">BARRA<br>DA TIJUCA</div>
+<div id="rj" class="t" style="top:640px;font-size:60px;letter-spacing:.22em;opacity:0">RIO DE JANEIRO</div>`,
+(q)=>{const hs=q('hs'),wn=q('wn'),nt=q('nt'),map=q('map'),pin=q('pin'),lc=q('lc'),rj=q('rj');hs.dataset.b='';pin.dataset.b='';
+ return t=>{const ph=pr(t,ss(7)-.05,ss(7)+.3);pop(nt,t,ss(6),.3);nt.style.opacity=(+nt.style.opacity)*(1-ph);
+  wn.style.opacity=1-pr(t,wt(6,3),wt(6,3)+.25);hs.style.opacity=1-ph;
+  map.style.opacity=ph*.9;
+  const d=eo(pr(t,wt(7,5),wt(7,5)+.4));pin.style.opacity=pr(t,wt(7,5),wt(7,5)+.1)*ph;pin.style.transform=`translateY(${(1-d)*-320}px)`;
+  pop(lc,t,wt(7,7),.4);pop(rj,t,wt(7,10),.35)}});
+
+/* ---------- E: investigação ---------- */
+scene(se(8),se(11),`
+<div class="abs" style="left:0;top:96px;width:720px;height:20px;background:linear-gradient(90deg,#E53E3E,#3B82F6)"></div>
+<div id="lr" class="abs" style="left:0;top:96px;width:360px;height:260px;background:radial-gradient(ellipse at 50% 0,#E53E3Eaa,transparent 70%)"></div>
+<div id="lb" class="abs" style="left:360px;top:96px;width:360px;height:260px;background:radial-gradient(ellipse at 50% 0,#3B82F6aa,transparent 70%)"></div>
+<div id="car" class="abs" style="left:110px;top:300px;opacity:0"><svg width="500" height="200" viewBox="0 0 500 200"><path d="M20 130Q20 100 60 96L130 92L180 36Q192 24 214 24H320Q342 24 356 38L400 92L450 100Q480 106 480 136V150H20Z" fill="#F5F1E6" stroke="#12161E" stroke-width="6"/><path d="M200 44H318L370 92H160Z" fill="#2A3446"/><rect x="170" y="150" width="0" height="0"/><rect x="20" y="118" width="460" height="22" fill="#2B5FB0"/><rect x="238" y="2" width="60" height="24" rx="6" fill="#E53E3E"/><circle cx="120" cy="156" r="34" fill="#12161E"/><circle cx="120" cy="156" r="14" fill="#8A94A6"/><circle cx="380" cy="156" r="34" fill="#12161E"/><circle cx="380" cy="156" r="14" fill="#8A94A6"/></svg></div>
+<div id="pl" class="abs" style="left:130px;top:250px"><div style="width:460px;height:170px;background:#F5F1E6;border:8px solid #12161E;border-radius:16px;overflow:hidden;position:relative"><div style="height:46px;background:#2B5FB0;color:#fff;text-align:center;font-size:30px;line-height:50px;letter-spacing:.3em">BRASIL</div><div class="t" style="left:0;width:460px;top:60px;font-size:84px;color:#12161E;letter-spacing:.08em">???·????</div></div></div>
+<div id="tw" class="t" style="top:445px;font-size:42px;letter-spacing:.25em;color:var(--y)">PLACA ANOTADA</div>
+<div id="g1" class="paper" style="left:70px;top:520px;width:580px;height:190px"><div class="t" style="left:0;width:580px;top:22px;font-size:38px;letter-spacing:.2em;color:#5a5f6c">ATOR · PAR ROMÂNTICO</div><div class="t" style="left:0;width:580px;top:84px;font-size:64px;color:var(--ink)">GUILHERME DE PÁDUA</div></div>
+<div id="g2" class="paper" style="left:110px;top:735px;width:500px;height:150px"><div class="t" style="left:0;width:500px;top:20px;font-size:34px;letter-spacing:.3em;color:#5a5f6c">ESPOSA DELE</div><div class="t" style="left:0;width:500px;top:70px;font-size:76px;color:var(--ink)">PAULA THOMAZ</div></div>`,
+(q)=>{const car=q('car'),lr=q('lr'),lb=q('lb'),pl=q('pl'),tw=q('tw'),g1=q('g1'),g2=q('g2');pl.dataset.b='';g1.dataset.b='';g2.dataset.b='';
+ return t=>{const f=Math.sin(t*14)>0;lr.style.opacity=f?1:.2;lb.style.opacity=f?.2:1;
+  {const a=eo(pr(t,ss(8),ss(8)+.6)),o=1-pr(t,wt(9,3),wt(9,3)+.3);car.style.opacity=pr(t,ss(8),ss(8)+.15)*o;car.style.transform=`translateX(${(1-a)*-640}px)`}pop(pl,t,wt(9,4)-.1,.4);pop(tw,t,wt(9,4)+.2,.3);
+  pop(g1,t,wt(10,4)-.05,.4);pop(g2,t,wt(11,5)-.05,.4)}});
+
+/* ---------- F: o júri ---------- */
+const gavel=`<svg width="420" height="300" viewBox="0 0 420 300"><g id="gv" transform-origin="300 200"><rect x="210" y="30" width="140" height="80" rx="14" fill="#B07A3A" stroke="#12161E" stroke-width="6" transform="rotate(-24 280 70)"/><rect x="130" y="130" width="220" height="22" rx="10" fill="#8A5A24" stroke="#12161E" stroke-width="6" transform="rotate(-24 240 140)"/></g><rect x="40" y="250" width="340" height="36" rx="10" fill="#3A4560" stroke="#12161E" stroke-width="5"/></svg>`;
+scene(se(11),se(15),`
+<div class="t" style="top:150px;font-size:56px;letter-spacing:.3em;color:var(--mu)">TRIBUNAL DO JÚRI</div>
+<div id="gb" class="abs" style="left:150px;top:230px">${gavel}</div>
+<div id="cr" class="abs" style="left:0;top:560px;width:720px;display:flex;justify-content:center;gap:6px">${[...Array(9)].map((_,i)=>`<div class="pc" style="opacity:0">${person(64,i%2?'#8A94A6':'#F5F1E6')}</div>`).join('')}</div>
+<div id="cd" class="abs" style="left:70px;top:700px;opacity:0"><div style="padding:6px 28px;border:11px solid #E53E3E;border-radius:12px;color:#E53E3E;font-size:84px;letter-spacing:.05em;white-space:nowrap;transform:rotate(-5deg)">CONDENADOS</div></div>`,
+(q,d)=>{const gb=q('gb'),cd=q('cd');const pc=[...d.querySelectorAll('.pc')];gb.dataset.b='';
+ return t=>{const g=pr(t,wt(14,0)-.1,wt(14,0)+.18);const sw=Math.sin(t*3)*3-g*14*(1-g)*4;gb.style.transform=`rotate(${sw}deg)`;
+  pc.forEach((e,i)=>{e.style.opacity=pr(t,wt(12,0)+i*.07,wt(12,0)+i*.07+.2)});
+  const k=pr(t,wt(14,3),wt(14,3)+.25);cd.style.opacity=k>0?1:0;cd.style.transform=`scale(${k>0?1+(1-eo(k))*1.8:0})`}});
+
+/* ---------- G: a mãe e a lei ---------- */
+scene(se(15),se(20),`
+<div id="mm" class="t" style="top:150px;font-size:100px;color:var(--tx);text-shadow:0 5px 0 #000;opacity:0">UMA MÃE</div>
+<div id="mp" class="abs" style="left:250px;top:330px">${person(220,'#8A94A6')}</div>
+<div id="gl" class="t" style="top:600px;font-size:70px;letter-spacing:.08em;color:var(--y);opacity:0">GLÓRIA PEREZ</div>
+<div id="sh" class="abs" style="left:0;top:170px;width:720px;height:420px;opacity:0">${[0,1,2,3,4].map(i=>`<div class="paper" style="left:${170+i*18}px;top:${40+i*14}px;width:300px;height:360px;transform:rotate(${(i-2)*5}deg)"><div style="margin:30px 24px;height:14px;background:#cfc6a0"></div><div style="margin:24px;height:14px;background:#cfc6a0"></div><div style="margin:24px;height:14px;background:#cfc6a0"></div><div style="margin:24px;height:14px;background:#cfc6a0"></div></div>`).join('')}</div>
+<div id="sg" class="t" style="top:690px;font-size:120px;color:var(--y);text-shadow:0 6px 0 #000;opacity:0">0</div>
+<div id="sl" class="t" style="top:825px;font-size:56px;letter-spacing:.25em;opacity:0">ASSINATURAS</div>
+<div id="yr" class="t" style="top:170px;font-size:230px;color:var(--y);text-shadow:0 8px 0 #000;opacity:0">1994</div>
+<div id="lw" class="paper" style="left:100px;top:440px;width:520px;height:120px;opacity:0"><div class="t" style="left:0;width:520px;top:30px;font-size:72px;color:var(--ink);letter-spacing:.06em">LEI 8.930/94</div></div>
+<div id="hq" class="t" style="top:600px;font-size:72px;line-height:1.05;opacity:0">HOMICÍDIO<br>QUALIFICADO</div>
+<div id="hd" class="abs" style="left:80px;top:770px;opacity:0"><div style="padding:6px 26px;border:10px solid #E53E3E;border-radius:12px;color:#E53E3E;font-size:62px;white-space:nowrap;transform:rotate(-4deg);letter-spacing:.04em">CRIME HEDIONDO</div></div>`,
+(q)=>{const mm=q('mm'),mp=q('mp'),gl=q('gl'),sh=q('sh'),sg=q('sg'),sl=q('sl'),yr=q('yr'),lw=q('lw'),hq=q('hq'),hd=q('hd');hd.dataset.b='';mp.dataset.b='';
+ return t=>{const p1=1-pr(t,ss(16)-.05,ss(16)+.25),p2=1-pr(t,ss(18)-.05,ss(18)+.25);
+  pop(mm,t,wt(15,2),.35);mm.style.opacity=(+mm.style.opacity)*p1;pop(mp,t,ss(15)+.1,.4);mp.style.opacity=(+mp.style.opacity)*p1;pop(gl,t,wt(15,8)-.3,.3);gl.style.opacity=(+gl.style.opacity)*p1;
+  const s=pr(t,ss(16),ss(16)+.4);sh.style.opacity=s*p2;sh.style.transform=`translateY(${(1-eo(s))*120}px)`;
+  const c=eo(pr(t,wt(17,0),wt(17,5)+.3));sg.textContent=(c>=.99?'+':'')+fmt(1300000*c);sg.style.opacity=pr(t,ss(17)-.1,ss(17)+.15)*p2;sl.style.opacity=pr(t,ss(16)+.3,ss(16)+.6)*p2;
+  pop(yr,t,wt(18,1),.4);yr.style.opacity=(+yr.style.opacity)*(1);pop(lw,t,wt(18,8),.35);
+  pop(hq,t,wt(19,0),.35);const k=pr(t,wt(19,5),wt(19,5)+.25);hd.style.opacity=k>0?1:0;hd.style.transform=`rotate(-4deg) scale(${k>0?1+(1-eo(k))*1.8:0})`}});
+
+/* ---------- H: a pena ---------- */
+scene(se(20),se(23),`
+<div class="t" style="top:150px;font-size:50px;letter-spacing:.35em;color:var(--mu)">A PENA</div>
+<div id="bar" class="abs" style="left:40px;top:225px;width:640px;display:flex;gap:4px">${[...Array(20)].map((_,i)=>`<div class="bk" style="width:28px;height:96px;border-radius:4px;background:#2A3446;border:2px solid #3a465c"></div>`).join('')}</div>
+<div id="q20" class="t" style="top:355px;font-size:104px;color:var(--r);text-shadow:0 6px 0 #000;opacity:0">QUASE 20 ANOS</div>
+<div id="y99" class="t" style="top:520px;font-size:200px;color:var(--y);text-shadow:0 8px 0 #000;opacity:0">1999</div>
+<div id="lc2" class="t" style="top:740px;font-size:60px;letter-spacing:.06em;opacity:0">LIBERDADE CONDICIONAL</div>
+<div id="tr" class="t" style="top:815px;font-size:70px;color:var(--g);opacity:0">1/3 DA PENA</div>`,
+(q,d)=>{const q20=q('q20'),y99=q('y99'),lc=q('lc2'),tr=q('tr');const bk=[...d.querySelectorAll('.bk')];
+ return t=>{bk.forEach((e,i)=>{const f=pr(t,wt(21,4)+i*.03,wt(21,4)+i*.03+.15);const g=i<7&&t>wt(23,2)+i*.04;e.style.background=g?'#7BC47F':(f>0?'#E53E3E':'#2A3446');e.style.borderColor=g?'#2E6B3A':(f>0?'#9b2c2c':'#3a465c')});
+  pop(q20,t,wt(21,4)-.05,.4);pop(y99,t,wt(22,2),.4);pop(lc,t,wt(22,12),.35);pop(tr,t,wt(23,2),.35)}});
+
+/* ---------- I: memorial + pergunta ---------- */
+scene(se(23),END+1,`
+<div id="fl" class="abs" style="left:290px;top:190px"><svg width="140" height="260" viewBox="0 0 140 260"><rect x="46" y="120" width="48" height="140" rx="6" fill="#F5F1E6"/><path id="fp" d="M70 10C100 55 108 80 70 118C32 80 40 55 70 10Z" fill="#ECC94B"/><path d="M70 50C84 74 86 88 70 108C54 88 56 74 70 50Z" fill="#E53E3E"/></svg></div>
+<div id="dn" class="t" style="top:480px;font-size:120px;line-height:1.02;text-shadow:0 6px 0 #000">DANIELLA<br>PEREZ</div>
+<div id="d22" class="t" style="top:740px;font-size:54px;letter-spacing:.3em;color:var(--mu)">22 ANOS</div>
+<div id="qt" class="t" style="top:230px;font-size:138px;line-height:1.04;color:var(--y);text-shadow:0 7px 0 #000;opacity:0">A JUSTIÇA<br>FOI FEITA?</div>
+<div id="bt" class="abs" style="left:0;top:620px;width:720px;display:flex;gap:30px;justify-content:center;font-size:56px;letter-spacing:.1em;opacity:0"><div style="width:220px;height:84px;border-radius:44px;background:var(--g);color:#12161E;text-align:center;line-height:88px">SIM</div><div style="width:220px;height:84px;border-radius:44px;background:var(--r);color:#fff;text-align:center;line-height:88px">NÃO</div></div>`,
+(q)=>{const fl=q('fl'),dn=q('dn'),d22=q('d22'),qt=q('qt'),bt=q('bt');fl.dataset.b='';
+ return t=>{const out=1-pr(t,ss(26)-.05,ss(26)+.25);fl.style.opacity=pr(t,ss(24)-.1,ss(24)+.5)*out;fl.style.transform=`scale(${1+.05*Math.sin(t*7)+.03*Math.sin(t*13)})`;
+  pop(dn,t,wt(24,0),.4);dn.style.opacity=(+dn.style.opacity)*out;pop(d22,t,wt(24,2),.3);d22.style.opacity=(+d22.style.opacity)*out;
+  const k=pr(t,ss(26),ss(26)+.35);qt.style.opacity=k;qt.style.transform=`scale(${.8+.2*eb(k)})`;pop(bt,t,wt(27,0)-.2,.35)}});
+
+
+/* ---------- legendas ---------- */
+const chunks=[];{let cur=[];W.forEach((w,i)=>{cur.push(w);const end=/[.,?!]$/.test(w.w);if(cur.length>=3||end||i==W.length-1){chunks.push(cur);cur=[]}});
+ // evita chunk de 1 palavra solta
+}
+const capEl=$('cap');let curChunk=-1;
+function caps(t){const ta=t-LEAD;let idx=-1;for(let i=0;i<chunks.length;i++){const c=chunks[i];const nxt=chunks[i+1];const st=c[0].t0-.02;const en=(nxt?nxt[0].t0:c[c.length-1].t1+.4)-.01;if(ta>=st&&ta<en){idx=i;break}}
+ if(idx!==curChunk){curChunk=idx;capEl.innerHTML=idx<0?'':chunks[idx].map(w=>`<span>${w.w.replace(/[.,]$/,'')}</span>`).join('')}
+ if(idx>=0){const sp=capEl.children;chunks[idx].forEach((w,i)=>sp[i].classList.toggle('on',ta>=w.t0-.01&&ta<w.t1+.05))}
+ if(idx>=0&&t>TOTAL+.6)capEl.innerHTML='',curChunk=-1}
+
+/* ---------- fim: fontes ---------- */
+$('endc').innerHTML=`<div class="t" style="top:240px;font-size:46px;letter-spacing:.3em;color:var(--mu)">FONTES</div>
+<div class="t" style="top:320px;font-size:62px;line-height:1.18">SBT NEWS<br>TNH1<br>POLITIZE<br>WIKIPÉDIA</div>
+<div class="t" style="top:660px;font-size:60px;color:var(--y);letter-spacing:.06em">@CASOSENGAVETADOS</div>
+<div class="t" style="top:750px;font-size:34px;letter-spacing:.22em;color:var(--mu)">SIGA PARA O PRÓXIMO CASO</div>`;
+let prevEnd=-1;
+function render(t){
+  scenes.forEach(s=>{const on=t>=s.a-.12&&t<=s.b+.12;s.d.style.display=on?'block':'none';if(on){const o=Math.min(pr(t,s.a-.12,s.a+.12),1-pr(t,s.b-.12,s.b+.12));s.d.style.opacity=o;s.upd(t)}});
+  const ck=pr(t,1.25,1.95);$('cover').style.transform=`translateY(${-eio(ck)*105}%)`;$('cover').style.display=ck>=1?'none':'block';
+  $('endc').style.opacity=pr(t,TOTAL+.2,TOTAL+.7);
+  $('prog').style.width=(720*cl(t/TOTAL))+'px';
+  $('vig').style.opacity=.9+.1*Math.sin(t*23);
+  caps(t)}
+window.seek=t=>render(t);window.END=END;
+window.play=()=>{const t0=performance.now();$('mk0').style.display='block';setTimeout(()=>$('mk0').style.display='none',120);const f=()=>{const t=(performance.now()-t0)/1000;render(t);window.__t=t;if(t<END+.5)requestAnimationFrame(f)};f()};
+document.fonts.ready.then(()=>{render(0);window.__ready=true});
+</script></body></html>
