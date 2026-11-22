@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Engavetados - Caso 1</title>
+<style>
+@font-face{font-family:Anton;src:url(anton.woff2) format("woff2")}
+@font-face{font-family:Marker;src:url(marker.woff2) format("woff2")}
+:root{--bg:#1E2633;--panel:#2A3446;--y:#ECC94B;--r:#E53E3E;--paper:#F3E9C6;--ink:#12161E;--tx:#F5F1E6;--mu:#8A94A6;--g:#7BC47F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:720px;height:1280px;background:#0c0f15;overflow:hidden}
+#stage{position:relative;width:720px;height:1280px;overflow:hidden;background:var(--bg);font-family:Anton,Impact,sans-serif;color:var(--tx);text-transform:uppercase}
+.sc{position:absolute;inset:0;opacity:0}
+.abs{position:absolute;transform-origin:center center}
+.t{position:absolute;left:0;width:720px;text-align:center;line-height:1}
+.ls{letter-spacing:.06em}
+.card{position:absolute;background:var(--panel);border:3px solid #3a465c;border-radius:18px}
+.paper{position:absolute;background:var(--paper);color:var(--ink);border-radius:6px;box-shadow:0 10px 30px #0008}
+.mk{font-family:Marker,cursive;text-transform:none}
+#hud{position:absolute;left:0;top:0;width:720px;height:96px;z-index:30;background:linear-gradient(#0c0f15f0,#0c0f1500)}
+#cap{position:absolute;left:30px;width:660px;top:902px;height:130px;z-index:30;text-align:center;font-size:62px;line-height:1.08;letter-spacing:.03em;-webkit-text-stroke:0;text-shadow:0 4px 0 #000,0 0 14px #000c,3px 3px 0 #000,-3px 3px 0 #000}
+#cap span{display:inline-block;margin:0 9px;color:#fff;transition:none}
+#cap span.on{color:var(--y);transform:scale(1.07)}
+#noise{position:absolute;inset:0;z-index:40;opacity:.07;pointer-events:none;mix-blend-mode:overlay}
+#vig{position:absolute;inset:0;z-index:41;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,#000a 100%)}
+#cover{position:absolute;inset:0;z-index:60;background:var(--bg)}
+#endc{position:absolute;inset:0;z-index:50;background:var(--bg);opacity:0}
+</style></head><body>
+<div id="stage">
+<div id="scenes"></div>
+<div id="hud">
+  <div class="abs" style="left:28px;top:26px;display:flex;align-items:center;gap:12px">
+    <svg width="34" height="28" viewBox="0 0 34 28"><path d="M0 4h12l3 4h19v20H0z" fill="#ECC94B"/><path d="M0 10h34v18H0z" fill="#F2D567"/></svg>
+    <div style="font-size:30px;letter-spacing:.1em">ENGAVETADOS</div></div>
+  <div class="abs" style="right:28px;top:26px;font-size:30px;letter-spacing:.1em;color:var(--y)">CASO #1</div>
+  <div id="prog" class="abs" style="left:0;top:90px;height:5px;width:0;background:var(--y)"></div>
+</div>
+<div id="cap"></div>
+<div id="endc"></div>
+<svg id="noise" width="720" height="1280"><filter id="nf"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#nf)"/></svg>
+<div id="vig"></div><div id="mk0" style="position:absolute;left:0;bottom:0;width:720px;height:40px;background:#ff00ff;z-index:99;display:none"></div>
+<div id="cover">
+  <div class="abs" style="left:60px;top:150px;width:600px;height:900px">
+    <svg width="600" height="900" viewBox="0 0 600 900">
+      <path d="M0 40 Q0 0 40 0 H220 Q250 0 265 30 L285 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#D9B53A"/>
+      <path d="M0 110 Q0 70 40 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#ECC94B"/>
+      <rect x="40" y="130" width="520" height="10" fill="#C99F25"/>
+    </svg>
+    <div class="t" style="left:0;width:600px;top:175px;font-size:44px;letter-spacing:.2em;color:#12161E">CASO #1</div>
+    <div class="t" style="left:0;width:600px;top:250px;font-size:200px;line-height:.9;color:#12161E">D.B.<br>COOPER</div>
+    <div class="t" style="left:0;width:600px;top:612px;font-size:44px;letter-spacing:.14em;color:#12161E">EUA · 1971</div>
+    <div class="abs" style="left:80px;top:704px;width:440px;padding:6px 0;border:9px solid #E53E3E;border-radius:10px;text-align:center;font-size:70px;white-space:nowrap;color:#E53E3E;transform:rotate(-7deg);letter-spacing:.05em">ENGAVETADO</div>
+    <div class="t" style="left:0;width:600px;top:862px;font-size:24px;letter-spacing:.28em;color:#12161EAA">ENGAVETADOS | CASOS REAIS</div>
+  </div>
+</div>
+</div>
+<script src="timing.js"></script>
+<script>
+const LEAD=0.6, TOTAL=TM.dur+LEAD, END=TOTAL+2.6;
+const W=TM.words, BS=[]; W.forEach(w=>(BS[w.s]=BS[w.s]||[]).push(w));
+const wt=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t0+LEAD;
+const we=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t1+LEAD;
+const ss=j=>TM.sents[j].t0+LEAD, se=j=>TM.sents[j].t1+LEAD;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), pr=(t,a,b)=>cl((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eb=x=>{const c=1.70158,d=c+1;return 1+d*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const $=(id)=>document.getElementById(id);
+function pop(el,t,a,d=.38){const p=pr(t,a,a+d);el.style.opacity=p>0?Math.min(1,p*3):0;el.style.transform=(el.dataset.b||'')+` scale(${p>0?Math.max(0,eb(p)):0})`}
+function fade(el,t,a,b,d=.3){el.style.opacity=Math.min(pr(t,a,a+d),1-pr(t,b-d,b))}
+function slide(el,t,a,dx,dy,d=.5){const p=eo(pr(t,a,a+d));el.style.opacity=Math.min(1,p*3);el.style.transform=(el.dataset.b||'')+` translate(${dx*(1-p)}px,${dy*(1-p)}px)`}
+const fmt=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const scenes=[];
+function scene(a,b,html,upd){const d=document.createElement('div');d.className='sc';d.innerHTML=html;$('scenes').appendChild(d);
+  const q=id=>d.querySelector('#'+id);scenes.push({a,b,d,upd:upd(q,d)});}
+const plane=(w,c='#0A0D13')=>`<svg width="${w}" viewBox="0 0 200 64"><g fill="${c}"><path d="M10 32Q10 25 30 25H150Q185 27 196 32Q185 37 150 39H30Q10 39 10 32Z"/><path d="M18 27L6 4H32L46 25Z"/><path d="M84 36L112 60H130L116 36Z"/><path d="M88 26L112 4H126L110 26Z"/><rect x="26" y="30" width="22" height="7" rx="3"/></g><g fill="#ECC94B" opacity=".9">${[...Array(12)].map((_,i)=>`<circle cx="${60+i*9}" cy="29" r="1.8"/>`).join('')}</g></svg>`;
+const para=(w,c='#F5F1E6')=>`<svg width="${w}" viewBox="0 0 90 100"><path d="M5 45A40 40 0 0 1 85 45Q65 35 45 45Q25 35 5 45Z" fill="${c}"/><path d="M5 45L40 88M85 45L50 88M45 45L45 88" stroke="${c}" stroke-width="2" fill="none"/><rect x="36" y="86" width="18" height="12" rx="3" fill="${c}"/></svg>`;
+const person=(w,c)=>`<svg width="${w}" viewBox="0 0 30 40"><circle cx="15" cy="9" r="7" fill="${c}"/><path d="M3 38Q3 18 15 18Q27 18 27 38Z" fill="${c}"/></svg>`;
+const bill=(w,h=w*.5)=>`<div style="width:${w}px;height:${h}px;background:#7BC47F;border:3px solid #2E6B3A;border-radius:6px;position:relative;box-shadow:0 4px 0 #2E6B3A"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:${h*.55}px;height:${h*.55}px;border-radius:50%;border:3px solid #2E6B3A;background:#9AD6A0"></div></div>`;
+const stamp=(txt,col,fs,extra='')=>`<div class="abs" style="padding:4px 22px;border:9px solid ${col};border-radius:10px;color:${col};font-size:${fs}px;letter-spacing:.06em;white-space:nowrap;${extra}">${txt}</div>`;
+
+/* ---------- S1: avião na noite ---------- */
+scene(0,se(2),`
+<div class="abs" style="inset:0;background:linear-gradient(#0A1020,#1A2540 60%,#2A3550)"></div>
+<div class="abs" style="left:520px;top:170px;width:110px;height:110px;border-radius:50%;background:#F5F1E6;box-shadow:0 0 70px #F5F1E655"></div>
+${[...Array(46)].map((_,i)=>`<div class="abs" style="left:${(i*263+ (i*i*37))%700}px;top:${110+(i*151+i*i*13)%430}px;width:${2+i%3}px;height:${2+i%3}px;border-radius:50%;background:#fff;opacity:${.3+(i%5)*.12}"></div>`).join('')}
+<div id="pl" class="abs" style="left:0;top:340px">${plane(300,"#46557D")}</div>
+<div id="c1" class="abs" style="left:-100px;top:470px;width:600px;height:150px;border-radius:50%;background:#3A4560;filter:blur(30px);opacity:.8"></div>
+<div id="c2" class="abs" style="left:300px;top:560px;width:620px;height:170px;border-radius:50%;background:#2E384F;filter:blur(34px);opacity:.9"></div>
+<div id="m1" class="t" style="top:640px;font-size:130px;color:var(--y);text-shadow:0 6px 0 #000">US$ 200.000</div>
+<div id="nv" class="t" style="top:250px;font-size:112px;line-height:.98;color:var(--r);text-shadow:0 6px 0 #000;transform:rotate(-4deg)">NUNCA MAIS<br>FOI VISTO</div>`,
+(q)=>{const pl=q('pl'),m1=q('m1'),nv=q('nv'),c1=q('c1'),c2=q('c2');pl.dataset.b='';
+ m1.dataset.b='';nv.dataset.b='rotate(-4deg)';
+ return t=>{const p=pr(t,ss(0),se(2)-.2);const x=-300+eo(p)*(900);const y=330+Math.sin(t*1.6)*9-p*40;
+  const sc=1-.35*pr(t,ss(2),se(2)),op=1-pr(t,wt(2,2),se(2)+.2);
+  pl.style.transform=`translate(${x}px,${y}px) scale(${sc}) rotate(${-2+Math.sin(t)*1.2}deg)`;pl.style.opacity=Math.min(1,op);
+  c1.style.transform=`translateX(${-t*6%80}px)`;c2.style.transform=`translateX(${t*5%80}px)`;
+  pop(m1,t,wt(1,5),.45);m1.style.opacity=Math.min(+m1.style.opacity,1-pr(t,ss(2)-.05,ss(2)+.2));
+  pop(nv,t,wt(2,2),.4)}});
+
+/* ---------- S2: data + rota ---------- */
+scene(se(2),se(4),`
+<div class="paper" style="left:70px;top:130px;width:580px;height:330px;transform:rotate(-1.5deg)"></div>
+<div class="abs" style="left:300px;top:116px;width:130px;height:36px;background:#ECC94B99;transform:rotate(3deg)"></div>
+<div id="d1" class="abs" style="left:100px;top:190px;font-size:170px;color:#12161E">24</div>
+<div id="d2" class="abs" style="left:262px;top:176px;font-size:76px;color:var(--r)">NOV</div>
+<div id="d3" class="abs" style="left:262px;top:268px;font-size:128px;color:#12161E;line-height:1">1971</div>
+<div id="d4" class="t" style="top:400px;font-size:34px;letter-spacing:.14em;color:#12161E">VOO 305 · NORTHWEST ORIENT</div>
+<div class="abs" style="left:70px;top:500px;width:580px;height:350px;border-radius:14px;background:#161D2A;border:3px solid #3a465c;overflow:hidden;background-image:linear-gradient(#ffffff0d 2px,transparent 2px),linear-gradient(90deg,#ffffff0d 2px,transparent 2px);background-size:46px 46px"></div>
+<svg class="abs" style="left:70px;top:500px" width="580" height="350"><path id="rt" d="M170 300 C 170 220, 400 200, 410 70" stroke="#ECC94B" stroke-width="5" stroke-dasharray="4 14" stroke-linecap="round" fill="none"/></svg>
+<div id="pa" class="abs" style="left:0;top:0">${plane(90,'#ECC94B')}</div>
+<div id="pp" class="abs" style="left:130px;top:790px;font-size:40px;letter-spacing:.08em">PORTLAND</div>
+<div id="ps" class="abs" style="left:380px;top:524px;font-size:40px;letter-spacing:.08em">SEATTLE</div>`,
+(q)=>{const d1=q('d1'),d2=q('d2'),d3=q('d3'),d4=q('d4'),pa=q('pa'),pp=q('pp'),ps=q('ps'),rt=q('rt');
+ const L=rt.getTotalLength();rt.setAttribute('stroke-dasharray','4 14');
+ return t=>{pop(d1,t,wt(3,0),.4);pop(d2,t,wt(3,4),.4);pop(d3,t,wt(3,6),.45);fade(d4,t,wt(4,0),se(4)+.4,.4);
+  pop(pp,t,wt(4,8),.3);pop(ps,t,wt(4,10),.3);
+  const p=eio(pr(t,wt(4,7),se(4)));const pt=rt.getPointAtLength(L*p);const pt2=rt.getPointAtLength(Math.min(L,L*p+4));
+  const ang=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI;
+  pa.style.transform=`translate(${70+pt.x-45}px,${500+pt.y-14}px) rotate(${ang}deg)`;pa.style.opacity=pr(t,wt(4,7),wt(4,7)+.2)}});
+
+/* ---------- S3: o passageiro ---------- */
+scene(se(4),se(7),`
+<div id="h1" class="t" style="top:122px;font-size:36px;letter-spacing:.3em;color:var(--mu)">O PASSAGEIRO</div>
+<div id="h2" class="t" style="top:168px;font-size:104px;color:var(--y);text-shadow:0 5px 0 #000">DAN COOPER</div>
+<div id="h3" class="t" style="top:284px;font-size:27px;letter-spacing:.14em;color:var(--mu)">NOME USADO · IDENTIDADE DESCONHECIDA</div>
+<svg class="abs" style="left:230px;top:330px" width="260" height="240" viewBox="0 0 260 240">
+ <path d="M10 240Q10 140 90 128L130 150L170 128Q250 140 250 240Z" fill="#0C0F15" stroke="#3a4560" stroke-width="3"/>
+ <path d="M96 130L130 205L164 130L130 150Z" fill="#F5F1E6"/>
+ <path d="M120 150L140 150L148 215L130 236L112 215Z" fill="#0C0F15" stroke="#3a4560" stroke-width="2"/>
+ <circle cx="130" cy="66" r="52" fill="#0C0F15" stroke="#3a4560" stroke-width="3"/>
+ <text x="130" y="92" text-anchor="middle" font-family="Marker" font-size="74" fill="#ECC94B">?</text></svg>
+<div id="k1" class="card" style="left:70px;top:600px;width:580px;height:62px"><div class="t" style="left:0;width:580px;top:12px;font-size:38px;letter-spacing:.08em">TERNO ESCURO</div></div>
+<div id="k2" class="card" style="left:70px;top:674px;width:580px;height:62px"><div class="t" style="left:0;width:580px;top:12px;font-size:38px;letter-spacing:.08em">GRAVATA PRETA</div></div>
+<div id="k3" class="card" style="left:70px;top:748px;width:580px;height:62px"><div class="t" style="left:0;width:580px;top:12px;font-size:38px;letter-spacing:.08em">CAMISA BRANCA</div></div>
+<div id="k4" class="card" style="left:70px;top:822px;width:580px;height:62px;border-color:var(--y)"><div class="t" style="left:0;width:580px;top:12px;font-size:38px;letter-spacing:.08em;color:var(--y)">BOURBON COM SODA</div></div>`,
+(q)=>{const h1=q('h1'),h2=q('h2'),h3=q('h3'),ks=['k1','k2','k3','k4'].map(q);
+ return t=>{fade(h1,t,ss(5),se(7)+.3);pop(h2,t,wt(5,5),.45);fade(h3,t,wt(5,5)+.3,se(7)+.3);
+  slide(ks[0],t,wt(6,0),-80,0);slide(ks[1],t,wt(6,2),80,0);slide(ks[2],t,wt(6,4),-80,0);slide(ks[3],t,wt(7,2),80,0)}});
+
+/* ---------- S4: o bilhete ---------- */
+scene(se(7),se(9),`
+<div id="who" class="abs" style="left:70px;top:210px;text-align:center;width:150px">${person(110,'#8A94A6')}<div style="font-size:30px;margin-top:6px;letter-spacing:.08em">COOPER</div></div>
+<div id="wc" class="abs" style="left:500px;top:210px;text-align:center;width:150px">${person(110,'#ECC94B')}<div style="font-size:30px;margin-top:6px;letter-spacing:.08em">COMISSÁRIA</div></div>
+<div id="nt1" class="abs" style="left:0;top:250px"><svg width="90" height="66" viewBox="0 0 90 66"><rect x="2" y="2" width="86" height="62" rx="5" fill="#F3E9C6" stroke="#B9A76E" stroke-width="3"/><path d="M2 6L45 36L88 6" stroke="#B9A76E" stroke-width="3" fill="none"/></svg></div>
+<div id="nt2" class="paper" style="left:70px;top:420px;width:580px;height:360px;transform:rotate(-3deg)">
+ <div class="abs mk" style="left:34px;top:46px;font-size:64px;line-height:1.05;color:#1b1b1b;width:520px;text-align:center;transform:rotate(1deg)">tenho<br>uma <span id="bb" style="color:#C0262D">BOMBA</span><br>na maleta</div></div>
+<div id="bc" class="abs" style="left:520px;top:690px;width:120px">
+ <svg width="120" height="100" viewBox="0 0 120 100"><path d="M40 20V8Q40 2 46 2H74Q80 2 80 8V20" stroke="#ECC94B" stroke-width="7" fill="none"/><rect x="2" y="20" width="116" height="76" rx="10" fill="#5A3D2B" stroke="#2c1d14" stroke-width="3"/><rect x="52" y="54" width="16" height="16" rx="3" fill="#ECC94B"/></svg></div>`,
+(q)=>{const nt1=q('nt1'),nt2=q('nt2'),bb=q('bb'),bc=q('bc'),who=q('who'),wc=q('wc');nt2.dataset.b='rotate(-3deg)';bc.dataset.b='';
+ return t=>{pop(who,t,ss(8),.3);pop(wc,t,ss(8)+.1,.3);
+  const p=eio(pr(t,wt(8,1),wt(8,5)));nt1.style.transform=`translate(${190+p*(310-0)}px,${p*0}px)`;nt1.style.opacity=pr(t,wt(8,1),wt(8,1)+.15)*(1-pr(t,wt(9,0)-.1,wt(9,0)+.15));
+  const a=pr(t,wt(9,0),wt(9,0)+.45);nt2.style.opacity=a;nt2.style.transform=`rotate(-3deg) translateY(${(1-eo(a))*260}px) scale(${.7+.3*eo(a)})`;
+  const pz=1+.12*Math.sin(Math.max(0,t-wt(9,5))*10)*(1-pr(t,wt(9,5),wt(9,5)+1.1));bb.style.display='inline-block';bb.style.transform=`scale(${t>wt(9,5)?pz+.1:1})`;
+  pop(bc,t,wt(9,6),.35)}});
+
+/* ---------- S5: exigências ---------- */
+scene(se(9),se(12),`
+<div id="e0" class="t" style="top:122px;font-size:40px;letter-spacing:.3em;color:var(--mu)">EXIGÊNCIAS</div>
+<div id="ea" class="card" style="left:60px;top:190px;width:600px;height:310px">
+  <div class="abs" style="left:40px;top:24px">${bill(120)}</div><div class="abs" style="left:100px;top:50px">${bill(120)}</div><div class="abs" style="left:160px;top:86px;display:none"></div>
+  <div class="abs" style="left:290px;top:60px;font-size:34px;color:var(--mu);letter-spacing:.14em">1 · DINHEIRO</div>
+  <div id="cn" class="t" style="left:0;width:600px;top:138px;font-size:100px;color:var(--y);white-space:nowrap">US$ 0</div>
+  <div id="n20" class="t" style="left:0;width:600px;top:252px;font-size:36px;letter-spacing:.1em">EM NOTAS DE US$ 20</div></div>
+<div id="eb" class="card" style="left:60px;top:540px;width:600px;height:310px">
+  <div class="abs" style="left:40px;top:30px;font-size:30px;color:var(--mu);letter-spacing:.14em">2 · PARAQUEDAS</div>
+  <div class="abs" style="left:400px;top:12px;font-size:150px;color:var(--y)" id="n4">4</div>
+  ${[0,1,2,3].map(i=>`<div id="pz${i}" class="abs" style="left:${40+i*115}px;top:100px">${para(100)}</div>`).join('')}</div>`,
+(q)=>{const e0=q('e0'),ea=q('ea'),eb_=q('eb'),cn=q('cn'),n20=q('n20'),n4=q('n4'),pz=[0,1,2,3].map(i=>q('pz'+i));
+ return t=>{fade(e0,t,ss(10),se(12)+.3,.3);
+  pop(ea,t,wt(11,0)-.2,.4);const c=eo(pr(t,wt(11,0),wt(11,2)+.2));cn.textContent='US$ '+fmt(200000*c);pop(n20,t,wt(11,4),.3);
+  pop(eb_,t,wt(12,1)-.1,.35);pz.forEach((p,i)=>pop(p,t,wt(12,1)+.1+i*.16,.3));pop(n4,t,wt(12,1)+.5,.35)}});
+
+/* ---------- S6: Seattle ---------- */
+scene(se(12),se(15),`
+<div id="sh" class="t" style="top:122px;font-size:96px;color:var(--y);text-shadow:0 5px 0 #000">SEATTLE</div>
+<div class="abs" style="left:0;top:330px;width:720px;height:6px;background:#3a4560"></div>
+<div id="pl2" class="abs" style="left:0;top:262px">${plane(260)}</div>
+<div id="gr" class="abs" style="left:96px;top:360px;width:528px;display:grid;grid-template-columns:repeat(9,1fr);gap:6px 4px">${[...Array(36)].map((_,i)=>`<div class="pp" style="opacity:0;text-align:center">${person(46,'#ECC94B')}</div>`).join('')}</div>
+<div id="n36" class="t" style="top:628px;font-size:150px;color:var(--g);text-shadow:0 5px 0 #000">0</div>
+<div id="l36" class="t" style="top:790px;font-size:44px;letter-spacing:.14em">PASSAGEIROS LIBERADOS</div>
+<div id="dl" class="abs" style="left:70px;top:650px;width:580px;height:160px;display:flex;gap:30px;align-items:center;justify-content:center;opacity:0;background:var(--bg)">
+  <div style="width:150px">${bill(150)}</div><div style="width:110px">${para(110)}</div><div style="font-size:58px;color:var(--g);letter-spacing:.08em;line-height:1">ENTREGUES</div></div>`,
+(q,d)=>{const sh=q('sh'),pl=q('pl2'),n36=q('n36'),l36=q('l36'),dl=q('dl');const ps=[...d.querySelectorAll('.pp')];
+ return t=>{pop(sh,t,ss(13),.4);
+  const p=eo(pr(t,ss(13)+.2,wt(13,3)));pl.style.transform=`translateX(${-300+p*(60+300)}px) translateY(${(1-p)*-30}px)`;
+  const ap=pr(t,wt(14,0),se(14));ps.forEach((e,i)=>{const k=pr(ap,i/36*.9,i/36*.9+.1);e.style.opacity=k>0?1:0;e.style.transform=`translateY(${(1-k)*12}px)`;e.querySelector('svg path,svg circle')&&e.querySelectorAll('svg *').forEach(x=>x.setAttribute('fill',k>=1?'#7BC47F':'#ECC94B'))});
+  n36.textContent=Math.round(36*eo(pr(t,wt(14,0),wt(14,3))));fade(n36,t,wt(14,0),se(14)+.2,.25);fade(l36,t,wt(14,0)+.2,se(14)+.2,.25);
+  const o=pr(t,ss(15),ss(15)+.35);dl.style.opacity=o;dl.style.transform=`translateY(${(1-eo(o))*60}px)`}});
+
+/* ---------- S7: salto na tempestade ---------- */
+scene(se(15),se(18),`
+<div class="abs" style="inset:0;background:linear-gradient(#05070C,#10162A 60%,#1A2238)"></div>
+<div id="rain"></div>
+<div id="fl" class="abs" style="inset:0;background:#fff;opacity:0"></div>
+<div id="cb" class="abs" style="left:-80px;top:560px;width:900px;height:260px;border-radius:50%;background:#222B42;filter:blur(40px);opacity:.95"></div>
+<div id="clk" class="abs" style="left:60px;top:140px;width:190px;height:190px">
+ <svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="88" fill="#10162A" stroke="#ECC94B" stroke-width="7"/>
+ ${[...Array(12)].map((_,i)=>`<line x1="95" y1="14" x2="95" y2="${i%3?22:28}" stroke="#F5F1E6" stroke-width="${i%3?3:5}" transform="rotate(${i*30} 95 95)"/>`).join('')}
+ <line x1="95" y1="95" x2="95" y2="30" stroke="#F5F1E6" stroke-width="6" stroke-linecap="round"/><line id="hh" x1="95" y1="95" x2="41" y2="126" stroke="#ECC94B" stroke-width="8" stroke-linecap="round"/><circle cx="95" cy="95" r="8" fill="#ECC94B"/></svg></div>
+<div id="h20" class="abs" style="left:280px;top:166px;font-size:100px;color:var(--y);text-shadow:0 5px 0 #000">~20H</div>
+<div id="tp" class="abs" style="left:282px;top:276px;font-size:46px;letter-spacing:.1em">TEMPESTADE</div>
+<div id="pl3" class="abs" style="left:0;top:380px">${plane(380,"#2B3550")}</div>
+<div id="jm" class="abs" style="left:0;top:0;width:56px">${person(56,'#ECC94B')}</div>
+<div id="rtb" class="abs" style="left:60px;top:700px;width:600px;height:150px">
+  <div class="abs" style="left:20px;top:78px;width:560px;height:0;border-top:6px dashed #ECC94B"></div>
+  <div id="rs" class="abs" style="left:0;top:20px;font-size:46px">SEATTLE</div><div id="rr" class="abs" style="left:450px;top:20px;font-size:46px">RENO</div>
+  <div id="rq" class="abs mk" style="left:270px;top:10px;font-size:110px;color:var(--r);text-transform:none">?</div></div>`,
+(q,d)=>{const rain=q('rain'),fl=q('fl'),hh=q('hh'),clk=q('clk'),h20=q('h20'),tp=q('tp'),pl=q('pl3'),jm=q('jm'),rtb=q('rtb'),rs=q('rs'),rr=q('rr'),rq=q('rq');
+ const dr=[];for(let i=0;i<60;i++){const e=document.createElement('div');e.className='abs';e.style.cssText=`width:2px;height:${30+i%4*12}px;background:#9fb2d8;opacity:${.25+i%3*.12};left:${(i*47)%740}px;top:0`;rain.appendChild(e);dr.push(e)}
+ const flashes=[wt(17,3)+.1,wt(17,7)+.2,wt(17,10)-.05,wt(18,2)];
+ clk.dataset.b='';
+ return t=>{dr.forEach((e,i)=>{const sp=900+(i%5)*160;e.style.transform=`translate(${-((t*sp*.25)%120)}px,${((t*sp+i*131)%1300)-100}px) rotate(12deg)`});
+  let f=0;flashes.forEach(a=>{const k=t-a;if(k>0&&k<.5)f=Math.max(f,(k<.08?k/.08:Math.max(0,1-(k-.08)/.42))*(k>.18&&k<.26?.2:1))});fl.style.opacity=f*.3;
+  pop(clk,t,wt(17,3)-.2,.4);pop(h20,t,wt(17,3),.4);pop(tp,t,wt(17,7),.4);
+  const p=pr(t,ss(16),wt(17,10)+1.4);pl.style.transform=`translate(${-260+p*(940)}px,${Math.sin(t*2)*8}px) rotate(1deg)`;
+  const jt=wt(17,9),jp=pr(t,jt,jt+2.1);const jx=-260+pr(jt,ss(16),wt(17,10)+1.4)*940+150;
+  jm.style.opacity=jp>0?Math.min(1,jp*8)*(1-pr(jp,.8,1)):0;jm.style.transform=`translate(${jx+jp*50}px,${470+eo(jp)*250}px) rotate(${jp*150}deg) scale(${1-jp*.45})`;
+  fade(rtb,t,ss(18),se(18)+.3,.3);pop(rs,t,wt(18,4),.3);pop(rr,t,wt(18,6),.3);rq.style.opacity=pr(t,wt(18,4),wt(18,5));rq.style.transform=`scale(${1+.1*Math.sin(t*6)})`}});
+
+/* ---------- S8: onde caiu / vestígios ---------- */
+scene(se(18),se(20),`
+<div id="g19" class="abs" style="inset:0">
+ ${[0,1,2].map(i=>`<div id="rg${i}" class="abs" style="left:160px;top:240px;width:400px;height:400px;border:5px solid #ECC94B;border-radius:50%"></div>`).join('')}
+ <div class="abs mk" style="left:0;width:720px;top:300px;text-align:center;font-size:300px;color:var(--r);line-height:1;text-transform:none" id="qm">?</div>
+ <div id="nq" class="t" style="top:700px;font-size:60px;letter-spacing:.06em">NINGUÉM VIU ONDE CAIU</div></div>
+<div id="g20" class="abs" style="inset:0">
+ <div id="bh" class="t" style="top:122px;font-size:44px;letter-spacing:.3em;color:var(--mu)">O QUE FICOU PARA TRÁS</div>
+ <div id="v1" class="paper" style="left:70px;top:200px;width:580px;height:170px;transform:rotate(-2deg)"><div class="abs" style="left:34px;top:28px"><svg width="100" height="120" viewBox="0 0 100 120"><path d="M30 0H70L64 22H36Z" fill="#12161E"/><path d="M36 22H64L74 110L50 120L26 110Z" fill="#12161E"/></svg></div><div class="abs mk" style="left:170px;top:50px;font-size:66px;color:#1b1b1b;text-transform:none">a gravata</div></div>
+ <div id="v2" class="paper" style="left:70px;top:400px;width:580px;height:170px;transform:rotate(1.5deg)"><div class="abs" style="left:30px;top:70px"><svg width="130" height="40" viewBox="0 0 130 40"><rect x="0" y="12" width="46" height="14" rx="3" fill="#E9DFC0" stroke="#12161E" stroke-width="3"/><rect x="0" y="12" width="12" height="14" fill="#C9822E"/><rect x="58" y="4" width="46" height="14" rx="3" transform="rotate(14 58 4)" fill="#E9DFC0" stroke="#12161E" stroke-width="3"/><rect x="58" y="4" width="12" height="14" transform="rotate(14 58 4)" fill="#C9822E"/></svg></div><div class="abs mk" style="left:200px;top:50px;font-size:64px;color:#1b1b1b;text-transform:none;line-height:1">bitucas</div></div>
+ <div id="v3" class="paper" style="left:70px;top:600px;width:580px;height:170px;transform:rotate(-1deg)"><div class="abs" style="left:30px;top:60px"><svg width="130" height="60" viewBox="0 0 130 60"><path d="M4 40C30 6 60 70 90 28S120 20 126 30" stroke="#12161E" stroke-width="5" fill="none" stroke-linecap="round"/></svg></div><div class="abs mk" style="left:190px;top:34px;font-size:60px;color:#1b1b1b;text-transform:none;line-height:1.02">um único<br>fio de cabelo</div></div>
+</div>`,
+(q)=>{const g19=q('g19'),g20=q('g20'),qm=q('qm'),nq=q('nq'),bh=q('bh'),vs=[q('v1'),q('v2'),q('v3')],rg=[0,1,2].map(i=>q('rg'+i));
+ vs[0].dataset.b='rotate(-2deg)';vs[1].dataset.b='rotate(1.5deg)';vs[2].dataset.b='rotate(-1deg)';
+ return t=>{g19.style.opacity=Math.min(pr(t,ss(19),ss(19)+.3),1-pr(t,ss(20)-.05,ss(20)+.25));
+  rg.forEach((r,i)=>{const k=((t-ss(19))*.55+i/3)%1;r.style.transform=`scale(${.2+k*1.0})`;r.style.opacity=(1-k)*.8});
+  qm.style.transform=`scale(${1+.06*Math.sin(t*5)})`;
+  g20.style.opacity=pr(t,ss(20),ss(20)+.25);fade(bh,t,ss(20),se(20)+.3,.3);
+  slide(vs[0],t,wt(20,3),-120,0,.45);slide(vs[1],t,wt(20,5),120,0,.45);slide(vs[2],t,wt(20,10),-120,0,.45)}});
+
+/* ---------- S9: 1980, rio Columbia ---------- */
+scene(se(20),se(24),`
+<div class="abs" style="left:0;top:790px;width:720px;height:140px;opacity:.55;overflow:hidden"><svg id="wv" width="1440" height="140" viewBox="0 0 1440 140"><path d="M0 40Q90 0 180 40T360 40T540 40T720 40T900 40T1080 40T1260 40T1440 40V140H0Z" fill="#2E5C8A"/></svg></div>
+<div id="y" class="t" style="top:120px;font-size:190px;color:var(--y);text-shadow:0 7px 0 #000">1980</div>
+<div id="bi" class="t" style="top:330px;font-size:54px;letter-spacing:.06em">BRIAN INGRAM · 8 ANOS</div>
+<div id="cl" class="t" style="top:400px;font-size:34px;letter-spacing:.28em;color:#6FA8DC">RIO COLUMBIA</div>
+<div id="fd" class="t" style="top:458px;font-size:116px;color:var(--g);text-shadow:0 5px 0 #000">US$ 0</div>
+<div id="bar" class="abs" style="left:60px;top:620px;width:600px;height:150px">
+  <div id="bl" class="abs" style="left:0;top:0;font-size:32px;letter-spacing:.12em;color:var(--mu)">RESGATE · US$ 200.000</div>
+  <div class="abs" style="left:0;top:52px;width:600px;height:46px;border-radius:8px;background:#E53E3E55;border:3px solid #E53E3E;overflow:hidden">
+    <div id="b2" class="abs" style="left:0;top:0;height:46px;width:600px;background:repeating-linear-gradient(135deg,#E53E3E55 0 12px,#E53E3E22 12px 24px)"></div>
+    <div id="b1" class="abs" style="left:0;top:0;height:46px;width:17px;background:var(--g)"></div></div>
+  <div id="t1" class="abs" style="left:0;top:104px;font-size:32px;color:var(--g);letter-spacing:.08em">ACHADO: US$ 5.800</div>
+  <div id="t2" class="abs" style="right:0;top:104px;font-size:32px;color:var(--r);letter-spacing:.08em;text-align:right">US$ 194.200 SUMIDOS</div></div>`,
+(q)=>{const y=q('y'),bi=q('bi'),cl_=q('cl'),fd=q('fd'),bar=q('bar'),b1=q('b1'),t1=q('t1'),t2=q('t2'),b2=q('b2'),wv=q('wv');
+ return t=>{pop(y,t,wt(21,1),.4);pop(bi,t,wt(21,5),.35);fade(cl_,t,wt(21,19),se(22),.3);
+  const c=eo(pr(t,wt(21,13),wt(21,17)+.2));fd.textContent='US$ '+fmt(5800*c);fade(fd,t,wt(21,13),se(22)+.2,.3);
+  wv.style.transform=`translateX(${-(t*60)%360}px)`;
+  fade(bar,t,ss(22),se(24)+.3,.35);b1.style.opacity=pr(t,ss(22)+.2,ss(22)+.4);pop(t1,t,wt(22,3),.3);
+  const f=pr(t,wt(23,0),wt(23,0)+.5);b2.style.opacity=.25+.75*f;pop(t2,t,wt(23,3),.35);t2.style.transform=`scale(${1+(t>wt(24,0)?.05*Math.sin((t-wt(24,0))*8):0)})`}});
+
+/* ---------- S10: suspeitos e encerramento ---------- */
+scene(se(24),se(26),`
+<div id="sn" class="t" style="top:122px;font-size:190px;color:var(--y);text-shadow:0 7px 0 #000">0</div>
+<div id="sl" class="t" style="top:318px;font-size:44px;letter-spacing:.14em">SUSPEITOS INVESTIGADOS</div>
+<div id="sg" class="abs" style="left:90px;top:400px;width:540px;display:grid;grid-template-columns:repeat(16,1fr);gap:4px 3px">${[...Array(80)].map(()=>`<div class="pp" style="opacity:0">${person(30,'#ECC94B')}</div>`).join('')}</div>
+<div id="y16" class="t" style="top:430px;font-size:210px;color:var(--tx);text-shadow:0 7px 0 #000;opacity:0">2016</div>
+<div id="fb" class="t" style="top:660px;font-size:46px;letter-spacing:.12em;opacity:0">INVESTIGAÇÃO ATIVA DO FBI</div>
+<div id="st" style="position:absolute;left:0;top:730px;width:720px;display:flex;justify-content:center;opacity:0">${stamp('ENCERRADA','#E53E3E',112)}</div>`,
+(q,d)=>{const sn=q('sn'),sl=q('sl'),sg=q('sg'),y16=q('y16'),fb=q('fb'),st=q('st');const ps=[...d.querySelectorAll('.pp')];
+ return t=>{const c=eo(pr(t,wt(25,5),wt(25,8)+.3));sn.textContent=fmt(800*c)+(c>=.999?'+':'');fade(sn,t,ss(25),ss(26)+.2,.3);fade(sl,t,ss(25),ss(26)+.2,.3);
+  ps.forEach((e,i)=>{e.style.opacity=pr(c,i/80,i/80+.02)});
+  sg.style.opacity=1-pr(t,ss(26),ss(26)+.3);
+  pop(y16,t,ss(26)+.15,.45);pop(fb,t,wt(26,5),.3);
+  const k=pr(t,wt(26,8)-.05,wt(26,8)+.2);st.style.opacity=k>0?1:0;st.style.transform=`rotate(-9deg) scale(${k>0?1+(1-eo(k))*2.2:0})`}});
+
+/* ---------- S11: sem solução + pergunta ---------- */
+scene(se(26),END+1,`
+<div id="dw" class="abs" style="left:60px;top:150px;width:600px;height:340px">
+  <div class="abs" style="left:0;top:0;width:600px;height:340px;background:#2A3446;border:4px solid #3a465c;border-radius:16px"></div>
+  <div class="abs" style="left:150px;top:36px;width:300px;height:92px;background:var(--paper);border-radius:8px;transform:rotate(-1deg)"><div class="t" style="left:0;width:300px;top:12px;font-size:38px;color:#12161E;letter-spacing:.1em">D.B. COOPER</div><div class="t" style="left:0;width:300px;top:56px;font-size:26px;color:#12161E99;letter-spacing:.2em">CASO #1 · 1971</div></div>
+  <div class="abs" style="left:262px;top:180px;width:76px;height:34px;border-radius:17px;background:#12161E;border:4px solid #3a465c"></div></div>
+<div id="ss" style="position:absolute;left:0;top:340px;width:720px;display:flex;justify-content:center;opacity:0">${stamp('SEM SOLUÇÃO','#E53E3E',104,'background:#1E2633EE')}</div>
+<div id="qq" class="t" style="top:566px;font-size:100px;line-height:1;color:var(--y);text-shadow:0 6px 0 #000">ELE<br>SOBREVIVEU?</div>
+<div id="bt" class="abs" style="left:0;top:790px;width:720px;display:flex;gap:30px;justify-content:center;font-size:50px;letter-spacing:.1em"><div style="width:200px;height:74px;border-radius:40px;background:var(--g);color:#12161E;text-align:center;line-height:78px">SIM</div><div style="width:200px;height:74px;border-radius:40px;background:var(--r);color:#fff;text-align:center;line-height:78px">NÃO</div></div>`,
+(q)=>{const dw=q('dw'),ss_=q('ss'),qq=q('qq'),bt=q('bt');dw.dataset.b='';
+ return t=>{const k=pr(t,ss(27),ss(27)+.5);dw.style.opacity=k;dw.style.transform=`translateY(${(1-eo(k))*-60}px)`;
+  const s=pr(t,wt(27,4)-.1,wt(27,4)+.2);ss_.style.opacity=s>0?1:0;ss_.style.transform=`rotate(-8deg) scale(${s>0?1+(1-eo(s))*2:0})`;
+  const lh=pr(t,ss(28),ss(28)+.35);qq.style.opacity=lh;qq.style.transform=`scale(${.8+.2*eb(lh)})`;
+  dw.style.opacity=k*(1-pr(t,ss(28),ss(28)+.4)*.6);ss_.style.opacity=(+ss_.style.opacity)*(1-pr(t,ss(28),ss(28)+.4)*.6);
+  pop(bt,t,wt(28,2),.35);const e=END-2.6;}});
+
+/* ---------- legendas ---------- */
+const chunks=[];{let cur=[];W.forEach((w,i)=>{cur.push(w);const end=/[.,?!]$/.test(w.w);if(cur.length>=3||end||i==W.length-1){chunks.push(cur);cur=[]}});
+ // evita chunk de 1 palavra solta
+}
+const capEl=$('cap');let curChunk=-1;
+function caps(t){const ta=t-LEAD;let idx=-1;for(let i=0;i<chunks.length;i++){const c=chunks[i];const nxt=chunks[i+1];const st=c[0].t0-.02;const en=(nxt?nxt[0].t0:c[c.length-1].t1+.4)-.01;if(ta>=st&&ta<en){idx=i;break}}
+ if(idx!==curChunk){curChunk=idx;capEl.innerHTML=idx<0?'':chunks[idx].map(w=>`<span>${w.w.replace(/[.,]$/,'')}</span>`).join('')}
+ if(idx>=0){const sp=capEl.children;chunks[idx].forEach((w,i)=>sp[i].classList.toggle('on',ta>=w.t0-.01&&ta<w.t1+.05))}
+ if(idx>=0&&t>TOTAL+.6)capEl.innerHTML='',curChunk=-1}
+
+/* ---------- fim: fontes ---------- */
+$('endc').innerHTML=`<div class="t" style="top:250px;font-size:46px;letter-spacing:.3em;color:var(--mu)">FONTES</div>
+<div class="t" style="top:330px;font-size:70px;line-height:1.18">FBI · A BYTE OUT<br>OF HISTORY<br>NPR · HISTORY.COM</div>
+<div class="t" style="top:640px;font-size:60px;color:var(--y);letter-spacing:.06em">@CASOSENGAVETADOS</div>
+<div class="t" style="top:730px;font-size:34px;letter-spacing:.22em;color:var(--mu)">SIGA PARA O PRÓXIMO CASO</div>`;
+let prevEnd=-1;
+function render(t){
+  scenes.forEach(s=>{const on=t>=s.a-.12&&t<=s.b+.12;s.d.style.display=on?'block':'none';if(on){const o=Math.min(pr(t,s.a-.12,s.a+.12),1-pr(t,s.b-.12,s.b+.12));s.d.style.opacity=o;s.upd(t)}});
+  const ck=pr(t,1.25,1.95);$('cover').style.transform=`translateY(${-eio(ck)*105}%)`;$('cover').style.display=ck>=1?'none':'block';
+  $('endc').style.opacity=pr(t,TOTAL+.2,TOTAL+.7);
+  $('prog').style.width=(720*cl(t/TOTAL))+'px';
+  $('vig').style.opacity=.9+.1*Math.sin(t*23);
+  caps(t)}
+window.seek=t=>render(t);window.END=END;
+window.play=()=>{const t0=performance.now();$('mk0').style.display='block';setTimeout(()=>$('mk0').style.display='none',120);const f=()=>{const t=(performance.now()-t0)/1000;render(t);window.__t=t;if(t<END+.5)requestAnimationFrame(f)};f()};
+document.fonts.ready.then(()=>{render(0);window.__ready=true});
+</script></body></html>
