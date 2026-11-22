@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Engavetados - Caso 2</title>
+<style>
+@font-face{font-family:Anton;src:url(anton.woff2) format("woff2")}
+@font-face{font-family:Marker;src:url(marker.woff2) format("woff2")}
+:root{--bg:#1E2633;--panel:#2A3446;--y:#ECC94B;--r:#E53E3E;--paper:#F3E9C6;--ink:#12161E;--tx:#F5F1E6;--mu:#8A94A6;--g:#7BC47F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:720px;height:1280px;background:#0c0f15;overflow:hidden}
+#stage{position:relative;width:720px;height:1280px;overflow:hidden;background:var(--bg);font-family:Anton,Impact,sans-serif;color:var(--tx);text-transform:uppercase}
+.sc{position:absolute;inset:0;opacity:0}
+.abs{position:absolute;transform-origin:center center}
+.t{position:absolute;left:0;width:720px;text-align:center;line-height:1}
+.ls{letter-spacing:.06em}
+.card{position:absolute;background:var(--panel);border:3px solid #3a465c;border-radius:18px}
+.paper{position:absolute;background:var(--paper);color:var(--ink);border-radius:6px;box-shadow:0 10px 30px #0008}
+.mk{font-family:Marker,cursive;text-transform:none}
+#hud{position:absolute;left:0;top:0;width:720px;height:96px;z-index:30;background:linear-gradient(#0c0f15f0,#0c0f1500)}
+#cap{position:absolute;left:30px;width:660px;top:902px;height:130px;z-index:30;text-align:center;font-size:62px;line-height:1.08;letter-spacing:.03em;-webkit-text-stroke:0;text-shadow:0 4px 0 #000,0 0 14px #000c,3px 3px 0 #000,-3px 3px 0 #000}
+#cap span{display:inline-block;margin:0 9px;color:#fff;transition:none}
+#cap span.on{color:var(--y);transform:scale(1.07)}
+#noise{position:absolute;inset:0;z-index:40;opacity:.07;pointer-events:none;mix-blend-mode:overlay}
+#vig{position:absolute;inset:0;z-index:41;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,#000a 100%)}
+#cover{position:absolute;inset:0;z-index:60;background:var(--bg)}
+#endc{position:absolute;inset:0;z-index:50;background:var(--bg);opacity:0}
+</style></head><body>
+<div id="stage">
+<div id="scenes"></div>
+<div id="hud">
+  <div class="abs" style="left:28px;top:26px;display:flex;align-items:center;gap:12px">
+    <svg width="34" height="28" viewBox="0 0 34 28"><path d="M0 4h12l3 4h19v20H0z" fill="#ECC94B"/><path d="M0 10h34v18H0z" fill="#F2D567"/></svg>
+    <div style="font-size:30px;letter-spacing:.1em">ENGAVETADOS</div></div>
+  <div class="abs" style="right:28px;top:26px;font-size:30px;letter-spacing:.1em;color:var(--y)">CASO #2</div>
+  <div id="prog" class="abs" style="left:0;top:90px;height:5px;width:0;background:var(--y)"></div>
+</div>
+<div id="cap"></div>
+<div id="endc"></div>
+<svg id="noise" width="720" height="1280"><filter id="nf"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#nf)"/></svg>
+<div id="vig"></div><div id="mk0" style="position:absolute;left:0;bottom:0;width:720px;height:40px;background:#ff00ff;z-index:99;display:none"></div>
+<div id="cover">
+  <div class="abs" style="left:60px;top:150px;width:600px;height:900px">
+    <svg width="600" height="900" viewBox="0 0 600 900">
+      <path d="M0 40 Q0 0 40 0 H220 Q250 0 265 30 L285 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#D9B53A"/>
+      <path d="M0 110 Q0 70 40 70 H560 Q600 70 600 110 V860 Q600 900 560 900 H40 Q0 900 0 860Z" fill="#ECC94B"/>
+      <rect x="40" y="130" width="520" height="10" fill="#C99F25"/>
+    </svg>
+    <div class="t" style="left:0;width:600px;top:175px;font-size:44px;letter-spacing:.2em;color:#12161E">CASO #2</div>
+    <div class="t" style="left:0;width:600px;top:250px;font-size:156px;line-height:.98;color:#12161E">BANCO<br>CENTRAL</div>
+    <div class="t" style="left:0;width:600px;top:612px;font-size:44px;letter-spacing:.14em;color:#12161E">BRASIL · 2005</div>
+    <div class="abs" style="left:80px;top:704px;width:440px;padding:6px 0;border:9px solid #E53E3E;border-radius:10px;text-align:center;font-size:58px;white-space:nowrap;color:#E53E3E;transform:rotate(-7deg);letter-spacing:.05em">DINHEIRO SUMIU</div>
+    <div class="t" style="left:0;width:600px;top:862px;font-size:24px;letter-spacing:.28em;color:#12161EAA">ENGAVETADOS | CASOS REAIS</div>
+  </div>
+</div>
+</div>
+<script src="timing.js"></script>
+<script>
+const LEAD=0.6, TOTAL=TM.dur+LEAD, END=TOTAL+2.6;
+const W=TM.words, BS=[]; W.forEach(w=>(BS[w.s]=BS[w.s]||[]).push(w));
+const wt=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t0+LEAD;
+const we=(j,k)=>BS[j][Math.min(k,BS[j].length-1)].t1+LEAD;
+const ss=j=>TM.sents[j].t0+LEAD, se=j=>TM.sents[j].t1+LEAD;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), pr=(t,a,b)=>cl((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eb=x=>{const c=1.70158,d=c+1;return 1+d*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const $=(id)=>document.getElementById(id);
+function pop(el,t,a,d=.38){const p=pr(t,a,a+d);el.style.opacity=p>0?Math.min(1,p*3):0;el.style.transform=(el.dataset.b||'')+` scale(${p>0?Math.max(0,eb(p)):0})`}
+function fade(el,t,a,b,d=.3){el.style.opacity=Math.min(pr(t,a,a+d),1-pr(t,b-d,b))}
+function slide(el,t,a,dx,dy,d=.5){const p=eo(pr(t,a,a+d));el.style.opacity=Math.min(1,p*3);el.style.transform=(el.dataset.b||'')+` translate(${dx*(1-p)}px,${dy*(1-p)}px)`}
+const fmt=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const scenes=[];
+function scene(a,b,html,upd){const d=document.createElement('div');d.className='sc';d.innerHTML=html;$('scenes').appendChild(d);
+  const q=id=>d.querySelector('#'+id);scenes.push({a,b,d,upd:upd(q,d)});}
+const plane=(w,c='#0A0D13')=>`<svg width="${w}" viewBox="0 0 200 64"><g fill="${c}"><path d="M10 32Q10 25 30 25H150Q185 27 196 32Q185 37 150 39H30Q10 39 10 32Z"/><path d="M18 27L6 4H32L46 25Z"/><path d="M84 36L112 60H130L116 36Z"/><path d="M88 26L112 4H126L110 26Z"/><rect x="26" y="30" width="22" height="7" rx="3"/></g><g fill="#ECC94B" opacity=".9">${[...Array(12)].map((_,i)=>`<circle cx="${60+i*9}" cy="29" r="1.8"/>`).join('')}</g></svg>`;
+const para=(w,c='#F5F1E6')=>`<svg width="${w}" viewBox="0 0 90 100"><path d="M5 45A40 40 0 0 1 85 45Q65 35 45 45Q25 35 5 45Z" fill="${c}"/><path d="M5 45L40 88M85 45L50 88M45 45L45 88" stroke="${c}" stroke-width="2" fill="none"/><rect x="36" y="86" width="18" height="12" rx="3" fill="${c}"/></svg>`;
+const person=(w,c)=>`<svg width="${w}" viewBox="0 0 30 40"><circle cx="15" cy="9" r="7" fill="${c}"/><path d="M3 38Q3 18 15 18Q27 18 27 38Z" fill="${c}"/></svg>`;
+const bill=(w,h=w*.5)=>`<div style="width:${w}px;height:${h}px;background:#7BC47F;border:3px solid #2E6B3A;border-radius:6px;position:relative;box-shadow:0 4px 0 #2E6B3A"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:${h*.55}px;height:${h*.55}px;border-radius:50%;border:3px solid #2E6B3A;background:#9AD6A0"></div></div>`;
+const stamp=(txt,col,fs,extra='')=>`<div class="abs" style="padding:4px 22px;border:9px solid ${col};border-radius:10px;color:${col};font-size:${fs}px;letter-spacing:.06em;white-space:nowrap;${extra}">${txt}</div>`;
+
+/* ---------- A: prédio e subsolo ---------- */
+const bankSvg=(w)=>`<svg width="${w}" viewBox="0 0 460 290"><polygon points="0,70 230,0 460,70" fill="#4A5878"/><rect x="10" y="70" width="440" height="22" fill="#3A4560"/>
+${[0,1,2,3,4,5].map(i=>`<rect x="${34+i*72}" y="96" width="36" height="150" fill="#566385"/><rect x="${30+i*72}" y="96" width="44" height="10" fill="#6a789c"/>`).join('')}
+<rect x="0" y="246" width="460" height="16" fill="#3A4560"/><rect x="-16" y="262" width="492" height="18" fill="#2f3850"/>
+<text x="230" y="58" text-anchor="middle" font-family="Anton" font-size="30" letter-spacing="3" fill="#ECC94B">BANCO CENTRAL</text>
+${[0,1,2,3,4].map(i=>`<rect x="${64+i*72}" y="150" width="8" height="14" fill="#ECC94B" opacity=".55"/>`).join('')}</svg>`;
+scene(0,se(2),`
+<div class="abs" style="left:0;top:0;width:720px;height:540px;background:linear-gradient(#0A1020,#1A2540)"></div>
+<div class="abs" style="left:0;top:540px;width:720px;height:740px;background:linear-gradient(#2c1f16,#150e09)"></div>
+<div class="abs" style="left:56px;top:170px;width:96px;height:96px;border-radius:50%;background:#F5F1E6;box-shadow:0 0 60px #F5F1E655"></div>
+${[...Array(34)].map((_,i)=>`<div class="abs" style="left:${(i*229+i*i*41)%700}px;top:${110+(i*131+i*i*17)%330}px;width:${2+i%3}px;height:${2+i%3}px;border-radius:50%;background:#fff;opacity:${.3+(i%5)*.12}"></div>`).join('')}
+<div id="bk" class="abs" style="left:130px;top:262px">${bankSvg(460)}</div>
+<div class="abs" style="left:0;top:540px;width:720px;height:8px;background:#5b4330"></div>
+${[0,1,2,3,4,5].map(i=>`<div class="abs" style="left:${(i*131)%640}px;top:${600+i*38}px;width:${70+(i*53)%90}px;height:10px;border-radius:6px;background:#3b2a1e"></div>`).join('')}
+<div id="ugr" class="abs" style="left:0;top:548px;width:720px;height:740px;background:#0b0705"></div>
+<svg class="abs" style="left:0;top:560px" width="720" height="360"><path id="tn" d="M-20 180 L 700 180" stroke="#0b0705" stroke-width="54" stroke-linecap="round" fill="none"/><path d="M-20 180 L700 180" stroke="#3b2a1e" stroke-width="3" fill="none" stroke-dasharray="2 10" opacity="0"/></svg>
+<div id="lamp" class="abs" style="left:0;top:700px;width:160px;height:160px;border-radius:50%;background:radial-gradient(#ECC94BDD 0%,#ECC94B55 35%,transparent 70%)"></div>
+<div id="wk" class="abs" style="left:0;top:714px">${person(44,'#F5F1E6')}</div>
+<div id="fz" class="t" style="top:128px;font-size:52px;letter-spacing:.2em;color:var(--y);text-shadow:0 4px 0 #000">FORTALEZA · CE</div>`,
+(q)=>{const cov=q('ugr'),lamp=q('lamp'),wk=q('wk'),fz=q('fz'),bk=q('bk');
+ return t=>{pop(fz,t,wt(1,7),.4);fz.style.opacity=Math.min(+fz.style.opacity,1-pr(t,ss(2),ss(2)+.3)*.0);
+  const u=pr(t,wt(2,0),wt(2,0)+.8);cov.style.opacity=1-u*.97;
+  const p=eo(pr(t,wt(2,1),se(2)));const x=60+p*420;lamp.style.opacity=u;lamp.style.transform=`translateX(${x-80}px) scale(${1+.08*Math.sin(t*9)})`;
+  wk.style.opacity=u;wk.style.transform=`translateX(${x-22}px)`;bk.style.transform=`translateY(${Math.sin(t*.8)*2}px)`}});
+
+/* ---------- B: 164 milhões ---------- */
+scene(se(2),se(5),`
+<div id="g1" class="abs" style="inset:0">
+ <div id="bm" class="t" style="top:150px;font-size:230px;color:var(--y);text-shadow:0 7px 0 #000;white-space:nowrap">R$ 0</div>
+ <div id="mm" class="t" style="top:392px;font-size:96px;letter-spacing:.08em;color:var(--tx)">MILHÕES</div>
+ <div id="pile" class="abs" style="left:110px;top:560px;width:500px;height:300px">
+ ${[...Array(15)].map((_,i)=>{const r=i<5?0:i<9?1:i<12?2:i<14?3:4,c=i<5?i:i<9?i-5:i<12?i-9:i<14?i-12:0,n=[5,4,3,2,1][r],x=250-n*48+c*96,y=230-r*46;return `<div class="bl abs" style="left:${x}px;top:${y}px">${bill(96)}</div>`}).join('')}</div></div>
+<div id="g2" class="abs" style="inset:0">
+ <div id="ag" class="t" style="top:150px;font-size:54px;letter-spacing:.4em;color:var(--mu)">AGOSTO</div>
+ <div id="yr" class="t" style="top:222px;font-size:260px;color:var(--tx);text-shadow:0 8px 0 #000">2005</div>
+ <div id="mf" style="position:absolute;left:0;top:560px;width:720px;display:flex;justify-content:center">${stamp('MAIOR FURTO<br>A BANCO DO BRASIL','#E53E3E',52,'text-align:center;line-height:1.08;background:#1E2633EE')}</div></div>`,
+(q,d)=>{const g1=q('g1'),g2=q('g2'),bm=q('bm'),mm=q('mm'),ag=q('ag'),yr=q('yr'),mf=q('mf');const bl=[...d.querySelectorAll('.bl')];const stp=mf.firstElementChild;
+ return t=>{g1.style.opacity=1-pr(t,ss(4)-.05,ss(4)+.2);g2.style.opacity=pr(t,ss(4),ss(4)+.25);
+  const c=eo(pr(t,wt(3,2),wt(3,6)+.3));bm.textContent='R$ '+Math.round(164*c);pop(bm,t,wt(3,2)-.15,.35);pop(mm,t,wt(3,7),.3);
+  bl.forEach((e,i)=>{const k=pr(t,wt(3,1)+i*.04,wt(3,1)+i*.04+.25);const s=pr(t,wt(3,11),wt(3,11)+.7+i*.02);e.style.opacity=k*(1-s);e.style.transform=`translateY(${(1-eo(k))*60-s*90}px) rotate(${s*(i%2?16:-16)}deg)`});
+  pop(ag,t,ss(4)+.05,.3);pop(yr,t,wt(4,2)-.1,.45);
+  const s=pr(t,wt(5,1),wt(5,1)+.25);mf.style.opacity=s>0?1:0;stp.style.transform=`rotate(-6deg) scale(${s>0?1+(1-eo(s))*1.8:0})`}});
+
+/* ---------- C: casa de fachada ---------- */
+scene(se(5),se(8),`
+<svg id="hs" class="abs" style="left:110px;top:210px" width="500" height="400" viewBox="0 0 500 400"><polygon points="20,150 250,10 480,150" fill="#7a3d33"/><rect x="50" y="150" width="400" height="230" fill="#C9B88F"/><rect x="215" y="240" width="70" height="140" fill="#4a3426"/><rect x="85" y="200" width="90" height="80" fill="#2a3446" stroke="#8a6f52" stroke-width="6"/><rect x="325" y="200" width="90" height="80" fill="#2a3446" stroke="#8a6f52" stroke-width="6"/><rect x="0" y="380" width="500" height="14" fill="#3a4560"/></svg>
+<div id="sg" class="abs" style="left:150px;top:420px;width:420px;height:100px;background:#2E6B3A;border:6px solid #9AD6A0;border-radius:10px;text-align:center;font-size:48px;line-height:88px;letter-spacing:.06em;color:#F5F1E6;transform-origin:left top">EMPRESA DE GRAMA</div>
+<div id="gr" class="abs" style="left:60px;top:640px;display:flex;gap:10px;opacity:0">${[0,1,2,3,4,5,6].map(i=>`<div style="width:78px;height:40px;background:#4FA35B;border-radius:6px;border-bottom:8px solid #2E6B3A"></div>`).join('')}</div>
+<div id="cc" class="t" style="top:130px;font-size:58px;letter-spacing:.14em">UMA CASA COMUM</div>
+<div id="fh" style="position:absolute;left:0;top:610px;width:720px;display:flex;justify-content:center;opacity:0">${stamp('FACHADA','#E53E3E',100,'background:#1E2633EE')}</div>`,
+(q)=>{const hs=q('hs'),sg=q('sg'),gr=q('gr'),cc=q('cc'),fh=q('fh');hs.dataset.b='';
+ return t=>{pop(hs,t,wt(6,3)-.1,.45);fade(cc,t,ss(6),ss(8)-.1,.3);
+  const s=pr(t,wt(7,4),wt(7,4)+.4);sg.style.opacity=s>0?1:0;sg.style.transform=`translateY(${(1-eo(s))*-90}px)`;gr.style.opacity=pr(t,wt(7,4)+.3,wt(7,4)+.6);
+  const f=pr(t,wt(8,2)-.05,wt(8,2)+.25);const fall=pr(t,wt(8,2),wt(8,2)+.7);sg.style.transform+=` rotate(${fall*38}deg) translateY(${fall*fall*60}px)`;sg.style.opacity=(+sg.style.opacity)*(1-fall*.35);
+  fh.style.opacity=f>0?1:0;fh.firstElementChild.style.transform=`rotate(-7deg) scale(${f>0?1+(1-eo(f))*2:0})`}});
+
+/* ---------- D: túnel ---------- */
+scene(se(8),se(12),`
+<div class="abs" style="left:0;top:410px;width:720px;height:900px;background:linear-gradient(#3b2a1e,#1a110c)"></div>
+<div class="abs" style="left:0;top:410px;width:720px;height:10px;background:#5b4330"></div>
+<div class="abs" style="left:20px;top:250px;width:190px">${(()=>`<svg width="190" viewBox="0 0 500 400"><polygon points="20,150 250,10 480,150" fill="#7a3d33"/><rect x="50" y="150" width="400" height="230" fill="#C9B88F"/><rect x="215" y="240" width="70" height="140" fill="#4a3426"/></svg>`)()}</div>
+<div class="abs" style="left:510px;top:250px;width:190px">${bankSvg(190)}</div>
+<svg class="abs" style="left:0;top:500px" width="720" height="140"><path d="M170 70 L 540 70" stroke="#2a1d14" stroke-width="12" stroke-dasharray="0" fill="none" opacity=".0"/><path id="tun" d="M170 70 L 540 70" stroke="#0b0705" stroke-width="46" stroke-linecap="butt" fill="none" stroke-dasharray="0.01 2000"/></svg>
+<div id="lp" class="abs" style="left:0;top:530px;width:120px;height:120px;border-radius:50%;background:radial-gradient(#ECC94BDD 0%,#ECC94B55 35%,transparent 70%)"></div>
+<div id="cal" class="abs" style="left:0;top:120px;width:720px;display:flex;gap:20px;justify-content:center">${['MÊS 1','MÊS 2','MÊS 3'].map(m=>`<div class="mn" style="width:190px;height:150px;background:var(--paper);border-radius:10px;border-top:34px solid var(--r);color:#12161E;text-align:center;font-size:52px;line-height:112px;opacity:0">${m}</div>`).join('')}</div>
+<div id="cl" class="t" style="top:292px;font-size:40px;letter-spacing:.3em;color:var(--mu);opacity:0">PLANEJAMENTO</div>
+<div id="ct" class="t" style="top:120px;font-size:190px;color:var(--y);text-shadow:0 6px 0 #000;opacity:0;text-transform:none">0 m</div>
+<div id="ey" class="abs" style="left:290px;top:690px;opacity:0"><svg width="140" height="70" viewBox="0 0 140 70"><path d="M10 20Q70 70 130 20" stroke="#F5F1E6" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M30 44l-10 14M70 56v16M110 44l10 14" stroke="#F5F1E6" stroke-width="6" stroke-linecap="round"/></svg></div>`,
+(q,d)=>{const tun=q('tun'),lp=q('lp'),cal=q('cal'),cl=q('cl'),ct=q('ct'),ey=q('ey');const mn=[...d.querySelectorAll('.mn')];
+ return t=>{mn.forEach((m,i)=>pop(m,t,wt(9,7)+i*.22,.3));cal.style.opacity=1-pr(t,ss(10)-.05,ss(10)+.2);fade(cl,t,wt(9,7),ss(10),.25);
+  const a=pr(t,ss(10),wt(11,0));const b=pr(t,wt(11,0),wt(11,4));const prog=.18*eo(a)+.82*eo(b);
+  tun.setAttribute('stroke-dasharray',`${Math.max(.01,prog*370)} 2000`);
+  lp.style.opacity=pr(t,ss(10),ss(10)+.3);lp.style.transform=`translateX(${110+prog*380}px)`;
+  ct.style.opacity=pr(t,ss(10),ss(10)+.3);ct.textContent=Math.round(80*eo(b))+' m';
+  ey.style.opacity=pr(t,wt(12,0),wt(12,0)+.3);ey.style.transform=`scale(${1+.04*Math.sin(t*3)})`}});
+
+/* ---------- E: cofre ---------- */
+const vaultSvg=`<svg width="460" height="460" viewBox="0 0 460 460"><circle cx="230" cy="230" r="220" fill="#566385" stroke="#3A4560" stroke-width="14"/><circle cx="230" cy="230" r="170" fill="#3A4560" stroke="#6a789c" stroke-width="8"/>${[0,1,2,3,4,5].map(i=>`<rect x="218" y="70" width="24" height="320" rx="10" fill="#8A94A6" transform="rotate(${i*30} 230 230)"/>`).join('')}<circle cx="230" cy="230" r="44" fill="#ECC94B" stroke="#12161E" stroke-width="8"/></svg>`;
+scene(se(12),se(15),`
+<div id="vi" class="abs" style="left:130px;top:240px;width:460px;height:460px;border-radius:50%;background:radial-gradient(#0b0f17 55%,#1a2233 100%);border:14px solid #3A4560;overflow:hidden">
+ ${[0,1,2,3].map(i=>`<div class="bg abs" style="left:${40+i*95}px;top:230px;opacity:0"><svg width="90" viewBox="0 0 90 100"><path d="M30 8Q45 -4 60 8L56 22Q82 40 82 70Q82 96 45 96Q8 96 8 70Q8 40 34 22Z" fill="#7BC47F" stroke="#2E6B3A" stroke-width="5"/><text x="45" y="76" text-anchor="middle" font-family="Anton" font-size="36" fill="#1E4D2B">R$</text></svg></div>`).join('')}</div>
+<div id="vd" class="abs" style="left:130px;top:240px;transform-origin:left center">${vaultSvg}</div>
+<div id="tc" class="t" style="top:130px;font-size:130px;color:var(--y);text-shadow:0 6px 0 #000;opacity:0;text-transform:none">0 t</div>
+<div id="tl" class="t" style="top:740px;font-size:44px;letter-spacing:.2em;color:var(--mu);opacity:0">DE DINHEIRO</div>
+<div id="sub" class="abs" style="inset:0;opacity:0;background:#1E2633">
+ <div id="al" class="abs" style="left:0;top:0;width:720px;height:1280px;background:radial-gradient(circle at 50% 40%,#E53E3E55,transparent 60%);opacity:0"></div>
+ <div class="paper" style="left:150px;top:190px;width:420px;height:330px"><div style="height:80px;background:var(--r);border-radius:6px 6px 0 0;color:#fff;text-align:center;font-size:56px;line-height:84px;letter-spacing:.2em">AGOSTO</div><div style="text-align:center;font-size:210px;line-height:1;margin-top:10px;color:#12161E" id="d8">8</div></div>
+ <div id="sgm" class="t" style="top:560px;font-size:64px;letter-spacing:.18em">SEGUNDA-FEIRA</div>
+ <div id="dsc" style="position:absolute;left:0;top:660px;width:720px;display:flex;justify-content:center;opacity:0">${stamp('DESCOBERTO','#E53E3E',104,'background:#1E2633EE')}</div></div>`,
+(q,d)=>{const d8=q('d8'),vd=q('vd'),tc=q('tc'),tl=q('tl'),sub=q('sub'),al=q('al'),dsc=q('dsc'),sgm=q('sgm');const bg=[...d.querySelectorAll('.bg')];
+ return t=>{const o=eio(pr(t,wt(13,4),wt(13,4)+.9));vd.style.transform=`perspective(900px) rotateY(${-o*105}deg)`;vd.style.opacity=1-pr(t,wt(13,4)+.7,wt(13,4)+1.0);
+  bg.forEach((b,i)=>{const k=pr(t,wt(13,4)+.5+i*.12,wt(13,4)+.9+i*.12);const mv=pr(t,wt(14,3)+i*.1,wt(14,3)+.8+i*.1);b.style.opacity=k*(1-mv);b.style.transform=`translateX(${mv*-260}px)`});
+  const c=eo(pr(t,wt(14,5),wt(14,8)+.2));tc.textContent=(3.5*c).toFixed(1).replace('.',',')+' t';tc.style.opacity=pr(t,wt(14,5)-.1,wt(14,5)+.15)*(1-pr(t,ss(15)-.05,ss(15)+.15));tl.style.opacity=tc.style.opacity;
+  const s=pr(t,ss(15),ss(15)+.35);sub.style.opacity=s;pop(sgm,t,wt(15,2)+.1,.3);
+  const k=pr(t,wt(15,8)-.05,wt(15,8)+.2);dsc.style.opacity=k>0?1:0;dsc.firstElementChild.style.transform=`rotate(-8deg) scale(${k>0?1+(1-eo(k))*2:0})`;
+  al.style.opacity=k>0?(.5+.5*Math.sin((t-wt(15,8))*10)):0;d8.style.transform=`scale(${1+(t>wt(15,2)?0:0)})`}});
+
+/* ---------- F: Polícia Federal ---------- */
+scene(se(15),se(18),`
+<div id="pf" class="abs" style="left:0;top:130px;width:720px;text-align:center"><svg width="150" viewBox="0 0 120 140"><path d="M60 4L112 22V70Q112 112 60 136Q8 112 8 70V22Z" fill="#2A3446" stroke="#ECC94B" stroke-width="6"/><text x="60" y="84" text-anchor="middle" font-family="Anton" font-size="52" fill="#ECC94B">PF</text></svg><div style="font-size:64px;letter-spacing:.1em;margin-top:6px">POLÍCIA FEDERAL</div></div>
+<div id="n1" class="t" style="top:150px;font-size:210px;color:var(--y);text-shadow:0 7px 0 #000;opacity:0">0</div>
+<div id="l1" class="t" style="top:392px;font-size:56px;letter-spacing:.14em;opacity:0">PESSOAS DENUNCIADAS</div>
+<div id="pg" class="abs" style="left:90px;top:480px;width:540px;display:grid;grid-template-columns:repeat(20,1fr);gap:4px 2px">${[...Array(100)].map(()=>`<div class="pp" style="opacity:0">${person(26,'#ECC94B')}</div>`).join('')}</div>
+<div id="cd" class="t" style="top:752px;font-size:66px;white-space:nowrap;color:var(--r);text-shadow:0 5px 0 #000;opacity:0;letter-spacing:.04em">DEZENAS CONDENADAS</div>`,
+(q,d)=>{const pf=q('pf'),n1=q('n1'),l1=q('l1'),cd=q('cd');const ps=[...d.querySelectorAll('.pp')];
+ return t=>{pop(pf,t,ss(16),.45);pf.style.opacity=Math.min(+pf.style.opacity,1-pr(t,ss(17)-.05,ss(17)+.25));
+  const c=eo(pr(t,wt(17,0),wt(17,2)+.25));n1.textContent=Math.round(100*c)+(c>=.999?'+':'');n1.style.opacity=pr(t,ss(17),ss(17)+.25);l1.style.opacity=pr(t,wt(17,3),wt(17,3)+.25);
+  ps.forEach((e,i)=>{e.style.opacity=pr(c,i/100,i/100+.02);const red=pr(t,wt(18,0),wt(18,0)+.4+i*.004);e.querySelectorAll('svg *').forEach(x=>x.setAttribute('fill',(i%10<8&&red>0.5)?'#E53E3E':'#ECC94B'))});
+  pop(cd,t,wt(18,0),.4)}});
+
+/* ---------- G: recuperado x sumido ---------- */
+scene(se(18),se(21),`
+<div class="t" style="top:150px;font-size:44px;letter-spacing:.26em;color:var(--mu)">R$ 164 MILHÕES</div>
+<div class="abs" style="left:50px;top:230px;width:620px;height:110px;border:5px solid #3a465c;border-radius:14px;overflow:hidden;background:#1a2233">
+ <div id="rv" class="abs" style="left:0;top:0;height:100px;width:112px;background:var(--g)"></div>
+ <div id="lo" class="abs" style="left:112px;top:0;height:100px;width:508px;background:repeating-linear-gradient(135deg,#E53E3E88 0 14px,#E53E3E33 14px 28px)"></div></div>
+<div id="t1" class="abs" style="left:50px;top:360px;font-size:44px;color:var(--g);letter-spacing:.06em">PARTE RECUPERADA</div>
+<div id="t2" class="t" style="top:470px;font-size:104px;line-height:1.02;color:var(--r);text-shadow:0 6px 0 #000">MAIOR PARTE<br>NUNCA VOLTOU</div>
+<div id="yy" class="t" style="top:740px;font-size:120px;color:var(--tx);text-shadow:0 6px 0 #000">+20 ANOS</div>
+<div id="qm2" class="abs mk" style="left:590px;top:330px;font-size:150px;color:var(--y);text-transform:none;line-height:1">?</div>`,
+(q)=>{const rv=q('rv'),lo=q('lo'),t1=q('t1'),t2=q('t2'),yy=q('yy'),qm=q('qm2');qm.dataset.b='';
+ return t=>{rv.style.opacity=pr(t,ss(19),ss(19)+.3);lo.style.opacity=.15+.85*pr(t,wt(20,3),wt(20,3)+.5);pop(t1,t,wt(19,1),.3);
+  pop(t2,t,wt(20,3),.45);pop(yy,t,wt(21,2),.4);const k=pr(t,wt(21,6),wt(21,6)+.3);qm.style.opacity=k;qm.style.transform=`scale(${1+.1*Math.sin(t*5)})`}});
+
+/* ---------- H: filme + pergunta ---------- */
+scene(se(21),END+1,`
+<div id="cb" class="abs" style="left:160px;top:190px;opacity:0"><svg width="400" viewBox="0 0 400 330"><rect x="10" y="90" width="380" height="230" rx="12" fill="#2A3446" stroke="#8A94A6" stroke-width="6"/><g><rect x="10" y="40" width="380" height="50" rx="8" fill="#F5F1E6"/>${[0,1,2,3,4,5].map(i=>`<polygon points="${20+i*62},40 ${62+i*62},40 ${42+i*62},90 ${i*62},90" fill="#12161E"/>`).join('')}</g><polygon points="165,160 165,260 255,210" fill="#ECC94B"/></svg></div>
+<div id="fs" class="t" style="top:560px;font-size:84px;letter-spacing:.1em;opacity:0">FILME · SÉRIE</div>
+<div id="oq" class="t" style="top:180px;font-size:134px;line-height:1.02;color:var(--y);text-shadow:0 7px 0 #000;opacity:0">ONDE ESTÁ<br>O DINHEIRO?</div>
+<div id="q2" class="t" style="top:520px;font-size:88px;line-height:1.05;opacity:0">UM DIA VÃO<br>ACHAR?</div>
+<div id="bt" class="abs" style="left:0;top:790px;width:720px;display:flex;gap:30px;justify-content:center;font-size:50px;letter-spacing:.1em;opacity:0"><div style="width:200px;height:74px;border-radius:40px;background:var(--g);color:#12161E;text-align:center;line-height:78px">SIM</div><div style="width:200px;height:74px;border-radius:40px;background:var(--r);color:#fff;text-align:center;line-height:78px">NÃO</div></div>`,
+(q)=>{const cb=q('cb'),fs=q('fs'),oq=q('oq'),q2=q('q2'),bt=q('bt');cb.dataset.b='';
+ return t=>{pop(cb,t,ss(22)+.1,.45);cb.style.opacity=(+cb.style.opacity)*(1-pr(t,wt(23,8)-.25,wt(23,8)));pop(fs,t,wt(22,3),.35);fs.style.opacity=(+fs.style.opacity)*(1-pr(t,wt(23,8)-.25,wt(23,8)));
+  pop(oq,t,wt(23,8)-.1,.5);oq.style.opacity=(+oq.style.opacity)*(1-pr(t,ss(24)-.05,ss(24)+.25));
+  const k=pr(t,ss(24),ss(24)+.35);q2.style.opacity=k;q2.style.transform=`scale(${.8+.2*eb(k)})`;pop(bt,t,wt(25,0)-.2,.35)}});
+
+/* ---------- legendas ---------- */
+const chunks=[];{let cur=[];W.forEach((w,i)=>{cur.push(w);const end=/[.,?!]$/.test(w.w);if(cur.length>=3||end||i==W.length-1){chunks.push(cur);cur=[]}});
+ // evita chunk de 1 palavra solta
+}
+const capEl=$('cap');let curChunk=-1;
+function caps(t){const ta=t-LEAD;let idx=-1;for(let i=0;i<chunks.length;i++){const c=chunks[i];const nxt=chunks[i+1];const st=c[0].t0-.02;const en=(nxt?nxt[0].t0:c[c.length-1].t1+.4)-.01;if(ta>=st&&ta<en){idx=i;break}}
+ if(idx!==curChunk){curChunk=idx;capEl.innerHTML=idx<0?'':chunks[idx].map(w=>`<span>${w.w.replace(/[.,]$/,'')}</span>`).join('')}
+ if(idx>=0){const sp=capEl.children;chunks[idx].forEach((w,i)=>sp[i].classList.toggle('on',ta>=w.t0-.01&&ta<w.t1+.05))}
+ if(idx>=0&&t>TOTAL+.6)capEl.innerHTML='',curChunk=-1}
+
+/* ---------- fim: fontes ---------- */
+$('endc').innerHTML=`<div class="t" style="top:250px;font-size:46px;letter-spacing:.3em;color:var(--mu)">FONTES</div>
+<div class="t" style="top:330px;font-size:70px;line-height:1.18">DIÁRIO DO NORDESTE<br>O POVO<br>CANALTECH</div>
+<div class="t" style="top:640px;font-size:60px;color:var(--y);letter-spacing:.06em">@CASOSENGAVETADOS</div>
+<div class="t" style="top:730px;font-size:34px;letter-spacing:.22em;color:var(--mu)">SIGA PARA O PRÓXIMO CASO</div>`;
+let prevEnd=-1;
+function render(t){
+  scenes.forEach(s=>{const on=t>=s.a-.12&&t<=s.b+.12;s.d.style.display=on?'block':'none';if(on){const o=Math.min(pr(t,s.a-.12,s.a+.12),1-pr(t,s.b-.12,s.b+.12));s.d.style.opacity=o;s.upd(t)}});
+  const ck=pr(t,1.25,1.95);$('cover').style.transform=`translateY(${-eio(ck)*105}%)`;$('cover').style.display=ck>=1?'none':'block';
+  $('endc').style.opacity=pr(t,TOTAL+.2,TOTAL+.7);
+  $('prog').style.width=(720*cl(t/TOTAL))+'px';
+  $('vig').style.opacity=.9+.1*Math.sin(t*23);
+  caps(t)}
+window.seek=t=>render(t);window.END=END;
+window.play=()=>{const t0=performance.now();$('mk0').style.display='block';setTimeout(()=>$('mk0').style.display='none',120);const f=()=>{const t=(performance.now()-t0)/1000;render(t);window.__t=t;if(t<END+.5)requestAnimationFrame(f)};f()};
+document.fonts.ready.then(()=>{render(0);window.__ready=true});
+</script></body></html>
